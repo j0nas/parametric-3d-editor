@@ -6,6 +6,7 @@
  */
 
 import { makeCylinder, drawCircle } from "replicad";
+import type { Sketch, Shape3D } from "replicad";
 import type { ParameterValues } from "@/types/parameters";
 
 /**
@@ -51,19 +52,19 @@ export function buildHoseAdapter(params: ParameterValues) {
   // Build OUTER shape - solid body representing the outside
   const outerSmallEnd = drawCircle(smallOuterRadius)
     .sketchOnPlane("XY", 0)
-    .extrude(endLength) as any;
+    .extrude(endLength) as Shape3D;
 
   const outerTaperBottom = drawCircle(smallOuterRadius)
-    .sketchOnPlane("XY", endLength) as any;
+    .sketchOnPlane("XY", endLength) as Sketch;
   const outerTaperTop = drawCircle(largeOuterRadius)
-    .sketchOnPlane("XY", endLength + taperLength) as any;
-  const outerTaper = outerTaperBottom.loftWith(outerTaperTop) as any;
+    .sketchOnPlane("XY", endLength + taperLength) as Sketch;
+  const outerTaper = outerTaperBottom.loftWith(outerTaperTop) as Shape3D;
 
   const outerLargeEnd = drawCircle(largeOuterRadius)
     .sketchOnPlane("XY", endLength + taperLength)
-    .extrude(endLength) as any;
+    .extrude(endLength) as Shape3D;
 
-  let outerBody = outerSmallEnd.fuse(outerTaper).fuse(outerLargeEnd) as any;
+  let outerBody = outerSmallEnd.fuse(outerTaper).fuse(outerLargeEnd) as Shape3D;
 
   // Add ridges to outer body
   if (ridgeCount > 0 && ridgeDepth > 0) {
@@ -92,19 +93,19 @@ export function buildHoseAdapter(params: ParameterValues) {
   // Build INNER shape - solid body representing the hollow cavity
   const innerSmallEnd = drawCircle(smallInnerRadius)
     .sketchOnPlane("XY", 0)
-    .extrude(endLength) as any;
+    .extrude(endLength) as Shape3D;
 
   const innerTaperBottom = drawCircle(smallInnerRadius)
-    .sketchOnPlane("XY", endLength) as any;
+    .sketchOnPlane("XY", endLength) as Sketch;
   const innerTaperTop = drawCircle(largeInnerRadius)
-    .sketchOnPlane("XY", endLength + taperLength) as any;
-  const innerTaper = innerTaperBottom.loftWith(innerTaperTop) as any;
+    .sketchOnPlane("XY", endLength + taperLength) as Sketch;
+  const innerTaper = innerTaperBottom.loftWith(innerTaperTop) as Shape3D;
 
   const innerLargeEnd = drawCircle(largeInnerRadius)
     .sketchOnPlane("XY", endLength + taperLength)
-    .extrude(endLength) as any;
+    .extrude(endLength) as Shape3D;
 
-  const innerBody = innerSmallEnd.fuse(innerTaper).fuse(innerLargeEnd) as any;
+  const innerBody = innerSmallEnd.fuse(innerTaper).fuse(innerLargeEnd) as Shape3D;
 
   // CUT the inner body from the outer body to create a hollow shell
   let body = outerBody.cut(innerBody);
