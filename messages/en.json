@@ -27,11 +27,11 @@
       "regenerating": "Regenerating model...",
       "parameters": {
         "innerDiameter": {
-          "label": "Inner Diameter",
+          "label": "Small End Diameter",
           "help": "Inner diameter of the smaller hose connection"
         },
         "outerDiameter": {
-          "label": "Outer Diameter",
+          "label": "Large End Diameter",
           "help": "Inner diameter of the larger hose connection"
         },
         "length": {

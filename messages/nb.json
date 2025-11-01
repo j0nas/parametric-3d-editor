@@ -27,11 +27,11 @@
       "regenerating": "Regenererer modell...",
       "parameters": {
         "innerDiameter": {
-          "label": "Indre diameter",
+          "label": "Liten ende diameter",
           "help": "Indre diameter på den minste slangeforbindelsen"
         },
         "outerDiameter": {
-          "label": "Ytre diameter",
+          "label": "Stor ende diameter",
           "help": "Indre diameter på den største slangeforbindelsen"
         },
         "length": {
