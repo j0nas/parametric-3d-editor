@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import * as Slider from "@radix-ui/react-slider";
 import type { ParameterDefinition } from "@/types/parameters";
 import type { DynamicConstraints } from "@/lib/validation";
@@ -34,6 +35,8 @@ export default function ParameterControl({
   disabled = false,
   dynamicConstraints,
 }: ParameterControlProps) {
+  const t = useTranslations("ParameterControl");
+
   // Calculate effective min/max (dynamic constraints override schema)
   const effectiveMin =
     dynamicConstraints?.min !== undefined
@@ -205,7 +208,7 @@ export default function ParameterControl({
               min={effectiveMin}
               max={effectiveMax}
               step={definition.step}
-              aria-label={`${definition.label} slider`}
+              aria-label={t("sliderAriaLabel", { label: definition.label })}
               className="relative flex items-center select-none touch-none w-full h-5"
             >
               <Slider.Track className="bg-gray-200 relative grow rounded-full h-1.5">

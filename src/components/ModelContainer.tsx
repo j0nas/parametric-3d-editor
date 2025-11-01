@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import * as THREE from "three";
 import type { ParameterValues } from "@/types/parameters";
 import ModelViewer from "./ModelViewer";
@@ -27,6 +28,7 @@ export default function ModelContainer({
   onLoadingChange,
   onShapeChange,
 }: ModelContainerProps) {
+  const t = useTranslations("Common");
   const [mesh, setMesh] = useState<THREE.Mesh | null>(null);
   const [shape, setShape] = useState<ReplicadShape | null>(null);
   const [loading, setLoading] = useState(true);
@@ -101,7 +103,7 @@ export default function ModelContainer({
             onClick={() => setError(null)}
             className="ml-3 underline hover:no-underline"
           >
-            Dismiss
+            {t("dismiss")}
           </button>
         </div>
       )}
@@ -112,7 +114,7 @@ export default function ModelContainer({
         className="absolute top-4 right-4 z-10 bg-white hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-md shadow-md transition-colors disabled:opacity-50"
         disabled={loading}
       >
-        Reset View
+        {t("resetView")}
       </button>
 
       <ModelViewer mesh={mesh} loading={loading} />

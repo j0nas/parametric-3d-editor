@@ -1,4 +1,12 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin({
+  experimental: {
+    // Provide the path to the messages that you're using in `AppConfig`
+    createMessagesDeclaration: './messages/en.json'
+  }
+});
 
 const nextConfig: NextConfig = {
   // Exclude replicad from server-side bundling
@@ -54,4 +62,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

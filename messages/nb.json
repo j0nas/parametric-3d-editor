@@ -1,0 +1,99 @@
+{
+  "Common": {
+    "loading": "Laster...",
+    "export": "Eksporter",
+    "exporting": "Eksporterer...",
+    "resetView": "Tilbakestill visning",
+    "dismiss": "Lukk"
+  },
+  "Catalog": {
+    "title": "Parametrisk 3D-redigering",
+    "subtitle": "Tilpass og eksporter parametriske 3D-modeller",
+    "products": "Produkter"
+  },
+  "Products": {
+    "hoseAdapter": {
+      "name": "Støvsugerslange-adapter",
+      "shortDescription": "Tilpasset diameter støvsugerslange-adapter for alle størrelser",
+      "description": "Tilpass og eksporter designet ditt",
+      "metadata": {
+        "title": "Støvsugerslange-adapter - Parametrisk 3D-redigering",
+        "description": "Konfigurer og eksporter tilpassede støvsugerslange-adaptere"
+      },
+      "initializing": "Starter 3D-visning...",
+      "parametersHeading": "Parametere",
+      "dimensionsHeading": "Dimensjoner",
+      "calculatedDimensionsHeading": "Beregnede dimensjoner",
+      "regenerating": "Regenererer modell...",
+      "parameters": {
+        "innerDiameter": {
+          "label": "Indre diameter",
+          "help": "Indre diameter på den minste slangeforbindelsen"
+        },
+        "outerDiameter": {
+          "label": "Ytre diameter",
+          "help": "Indre diameter på den største slangeforbindelsen"
+        },
+        "length": {
+          "label": "Total lengde",
+          "help": "Total lengde på adapteren"
+        },
+        "wallThickness": {
+          "label": "Veggtykkelse",
+          "help": "Tykkelse på adapterveggene"
+        },
+        "taperLength": {
+          "label": "Avsmalnende lengde",
+          "help": "Lengde på den avsmalnende overgangen mellom diametrene"
+        },
+        "ridgeCount": {
+          "label": "Antall riller",
+          "help": "Antall grepstriller i hver ende (0 for glatt)"
+        },
+        "ridgeDepth": {
+          "label": "Rilledybde",
+          "help": "Dybde på grepstrillene (gjelder bare hvis antall riller > 0)"
+        },
+        "ridgeWidth": {
+          "label": "Rillebredde",
+          "help": "Bredde på hver grepstrille"
+        }
+      },
+      "calculatedDimensions": {
+        "smallEndOuterDiameter": "Liten ende ytre diameter",
+        "largeEndOuterDiameter": "Stor ende ytre diameter",
+        "endSectionLength": "Endeseksjonens lengde",
+        "diameterDifference": "Diameterforskjell",
+        "ridgeSpacing": "Rilleavstand"
+      }
+    }
+  },
+  "ParameterControl": {
+    "sliderAriaLabel": "{label} glidebryter"
+  },
+  "ExportPanel": {
+    "exportFormat": "Eksportformat:",
+    "stlLabel": "STL",
+    "stlDescription": "(3D-printing)",
+    "stepLabel": "STEP",
+    "stepDescription": "(CAD-redigering)",
+    "exportButton": "Eksporter {format}",
+    "exportFailed": "Eksportering mislyktes: {error}"
+  },
+  "Validation": {
+    "required": "{label} er påkrevd",
+    "min": "{label} må være minst {min}{unit}",
+    "max": "{label} må være maks {max}{unit}",
+    "step": "{label} må være et multiplum av {step}{unit}",
+    "outerGreaterThanInner": "Ytre diameter må være større enn indre diameter",
+    "outerAtLeast2mmLarger": "Ytre diameter må være minst 2 mm større enn indre diameter",
+    "taperTooLong": "Avsmalnende lengde må være maks {maxTaperLength} mm (total lengde minus {minEndLengthTotal} mm for endene)",
+    "wallThicknessTooLarge": "Veggtykkelse kan ikke overstige {maxWallThickness} mm (halvparten av indre diameter)",
+    "wallThicknessTooSmall": "Veggtykkelse må være minst 1 mm for strukturell integritet",
+    "tooManyRidges": "For mange riller for tilgjengelig plass. Maksimalt {maxRidges} riller",
+    "ridgeDepthExceedsWall": "Rilledybde bør ikke overstige veggtykkelse"
+  },
+  "Units": {
+    "mm": "mm"
+  }
+}

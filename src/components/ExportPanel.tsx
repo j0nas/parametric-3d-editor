@@ -6,6 +6,7 @@
  */
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export type ExportFormat = "stl" | "step";
 
@@ -17,6 +18,7 @@ interface ExportPanelProps {
 }
 
 export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
+  const t = useTranslations("ExportPanel");
   const [format, setFormat] = useState<ExportFormat>("stl");
   const [exporting, setExporting] = useState(false);
 
@@ -26,7 +28,9 @@ export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
       await onExport(format);
     } catch (err) {
       console.error("Export failed:", err);
-      alert(`Export failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      const errorMessage =
+        err instanceof Error ? err.message : t("exportFailed", { error: "Unknown error" });
+      alert(errorMessage);
     } finally {
       setExporting(false);
     }
@@ -35,7 +39,9 @@ export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-6">
-        <span className="text-sm font-medium text-gray-700">Export format:</span>
+        <span className="text-sm font-medium text-gray-700">
+          {t("exportFormat")}
+        </span>
 
         {/* Format Selector - Radio Buttons */}
         <div className="flex items-center gap-4">
@@ -50,7 +56,8 @@ export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
               className="w-4 h-4 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
             />
             <span className="text-sm text-gray-700">
-              STL <span className="text-gray-500">(3D printing)</span>
+              {t("stlLabel")}{" "}
+              <span className="text-gray-500">{t("stlDescription")}</span>
             </span>
           </label>
 
@@ -65,7 +72,8 @@ export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
               className="w-4 h-4 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
             />
             <span className="text-sm text-gray-700">
-              STEP <span className="text-gray-500">(CAD editing)</span>
+              {t("stepLabel")}{" "}
+              <span className="text-gray-500">{t("stepDescription")}</span>
             </span>
           </label>
         </div>
@@ -77,7 +85,9 @@ export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
         disabled={disabled || exporting}
         className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
       >
-        {exporting ? "Exporting..." : `Export ${format.toUpperCase()}`}
+        {exporting
+          ? t("exporting")
+          : t("exportButton", { format: format.toUpperCase() })}
       </button>
     </div>
   );

@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import type {
   ParameterSchema,
   ParameterValues,
@@ -35,6 +36,9 @@ export default function ParameterPanel({
   onChange,
   loading = false,
 }: ParameterPanelProps) {
+  const t = useTranslations("Products.hoseAdapter");
+  const tValidation = useTranslations("Validation");
+
   // Local state for immediate UI updates (before debounce)
   const [localValues, setLocalValues] = useState<ParameterValues>(values);
 
@@ -54,9 +58,9 @@ export default function ParameterPanel({
 
   // Validate whenever local values change
   useEffect(() => {
-    const validationResult = validateParameters(schema, localValues);
+    const validationResult = validateParameters(schema, localValues, tValidation);
     setValidation(validationResult);
-  }, [localValues, schema]);
+  }, [localValues, schema, tValidation]);
 
   // Handle parameter change with debouncing
   const handleParameterChange = useCallback(
@@ -76,13 +80,13 @@ export default function ParameterPanel({
       // Set new debounce timer (300ms)
       debounceTimer.current = setTimeout(() => {
         // Only propagate change if validation passes
-        const validationResult = validateParameters(schema, newValues);
+        const validationResult = validateParameters(schema, newValues, tValidation);
         if (validationResult.isValid) {
           onChange(newValues);
         }
       }, 300);
     },
-    [localValues, onChange, schema]
+    [localValues, onChange, schema, tValidation]
   );
 
   // Cleanup debounce timer on unmount
@@ -95,7 +99,7 @@ export default function ParameterPanel({
   }, []);
 
   // Calculate dimension readouts
-  const dimensions = calculateDimensions(localValues);
+  const dimensions = calculateDimensions(localValues, t);
 
   // Calculate dynamic constraints for interdependent parameters
   const dynamicConstraints = calculateDynamicConstraints(schema, localValues);
@@ -105,7 +109,7 @@ export default function ParameterPanel({
       {/* Parameter Controls */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-          Dimensions
+          {t("dimensionsHeading")}
         </h3>
         {Object.entries(schema).map(([key, definition]) => (
           <ParameterControl
@@ -123,7 +127,7 @@ export default function ParameterPanel({
       {/* Dimension Readouts */}
       <div className="border-t border-gray-200 pt-4">
         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-          Calculated Dimensions
+          {t("calculatedDimensionsHeading")}
         </h3>
         <div className="space-y-2">
           {dimensions.map((dim) => (
@@ -164,7 +168,7 @@ export default function ParameterPanel({
               />
             </svg>
             <span className="ml-3 text-sm text-blue-700">
-              Regenerating model...
+              {t("regenerating")}
             </span>
           </div>
         </div>
@@ -176,7 +180,10 @@ export default function ParameterPanel({
 /**
  * Calculate derived dimensions from parameter values
  */
-function calculateDimensions(values: ParameterValues) {
+function calculateDimensions(
+  values: ParameterValues,
+  t: (key: string) => string
+) {
   const {
     innerDiameter = 0,
     outerDiameter = 0,
@@ -188,25 +195,25 @@ function calculateDimensions(values: ParameterValues) {
 
   const dimensions = [
     {
-      label: "Small End Outer Diameter",
+      label: t("calculatedDimensions.smallEndOuterDiameter"),
       value: innerDiameter + 2 * wallThickness,
       unit: "mm",
       precision: 1,
     },
     {
-      label: "Large End Outer Diameter",
+      label: t("calculatedDimensions.largeEndOuterDiameter"),
       value: outerDiameter + 2 * wallThickness,
       unit: "mm",
       precision: 1,
     },
     {
-      label: "End Section Length",
+      label: t("calculatedDimensions.endSectionLength"),
       value: (length - taperLength) / 2,
       unit: "mm",
       precision: 1,
     },
     {
-      label: "Diameter Difference",
+      label: t("calculatedDimensions.diameterDifference"),
       value: outerDiameter - innerDiameter,
       unit: "mm",
       precision: 1,
@@ -217,7 +224,7 @@ function calculateDimensions(values: ParameterValues) {
   if (ridgeCount > 0) {
     const endLength = (length - taperLength) / 2;
     dimensions.push({
-      label: "Ridge Spacing",
+      label: t("calculatedDimensions.ridgeSpacing"),
       value: endLength / (ridgeCount + 1),
       unit: "mm",
       precision: 1,

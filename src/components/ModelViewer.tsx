@@ -7,6 +7,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Grid } from "@react-three/drei";
+import { useTranslations } from "next-intl";
 import * as THREE from "three";
 import { useRef, useEffect } from "react";
 import type { OrbitControls as OrbitControlsType } from "three-stdlib";
@@ -104,11 +105,13 @@ function Scene({ mesh }: { mesh: THREE.Mesh | null }) {
  * ModelViewer component - Main 3D viewer wrapper
  */
 export default function ModelViewer({ mesh, loading = false }: ModelViewerProps) {
+  const t = useTranslations("Common");
+
   return (
     <div className="w-full h-full relative">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 z-10">
-          <div className="text-white text-lg">Loading model...</div>
+          <div className="text-white text-lg">{t("loading")}</div>
         </div>
       )}
       <Canvas

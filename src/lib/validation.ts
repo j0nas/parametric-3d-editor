@@ -20,11 +20,13 @@ import type {
  *
  * @param schema - Parameter schema with validation constraints
  * @param values - Current parameter values to validate
+ * @param t - Optional translation function for error messages
  * @returns Validation result with any errors found
  */
 export function validateParameters(
   schema: ParameterSchema,
-  values: ParameterValues
+  values: ParameterValues,
+  t?: (key: string, params?: Record<string, string | number | Date>) => string
 ): ValidationResult {
   const errors: ValidationError[] = [];
 
@@ -36,7 +38,9 @@ export function validateParameters(
     if (value === undefined || value === null) {
       errors.push({
         parameterId: key,
-        message: `${definition.label} is required`,
+        message: t
+          ? t("required", { label: definition.label })
+          : `${definition.label} is required`,
       });
       continue;
     }
@@ -45,14 +49,18 @@ export function validateParameters(
     if (value < definition.min) {
       errors.push({
         parameterId: key,
-        message: `${definition.label} must be at least ${definition.min}${definition.unit}`,
+        message: t
+          ? t("min", { label: definition.label, min: definition.min, unit: definition.unit })
+          : `${definition.label} must be at least ${definition.min}${definition.unit}`,
       });
     }
 
     if (value > definition.max) {
       errors.push({
         parameterId: key,
-        message: `${definition.label} must be at most ${definition.max}${definition.unit}`,
+        message: t
+          ? t("max", { label: definition.label, max: definition.max, unit: definition.unit })
+          : `${definition.label} must be at most ${definition.max}${definition.unit}`,
       });
     }
 
@@ -62,7 +70,9 @@ export function validateParameters(
     if (Math.abs(stepsFromMin - Math.round(stepsFromMin)) > tolerance) {
       errors.push({
         parameterId: key,
-        message: `${definition.label} must be a multiple of ${definition.step}${definition.unit}`,
+        message: t
+          ? t("step", { label: definition.label, step: definition.step, unit: definition.unit })
+          : `${definition.label} must be a multiple of ${definition.step}${definition.unit}`,
       });
     }
   }
@@ -72,7 +82,9 @@ export function validateParameters(
     if (values.outerDiameter <= values.innerDiameter) {
       errors.push({
         parameterId: "outerDiameter",
-        message: "Outer diameter must be greater than inner diameter",
+        message: t
+          ? t("outerGreaterThanInner")
+          : "Outer diameter must be greater than inner diameter",
       });
     }
 
@@ -81,7 +93,9 @@ export function validateParameters(
     if (diameterDiff < 2) {
       errors.push({
         parameterId: "outerDiameter",
-        message: "Outer diameter must be at least 2mm larger than inner diameter",
+        message: t
+          ? t("outerAtLeast2mmLarger")
+          : "Outer diameter must be at least 2mm larger than inner diameter",
       });
     }
   }
@@ -94,7 +108,12 @@ export function validateParameters(
     if (values.taperLength > maxTaperLength) {
       errors.push({
         parameterId: "taperLength",
-        message: `Taper length must be at most ${maxTaperLength.toFixed(1)}mm (total length minus ${2 * minEndLength}mm for ends)`,
+        message: t
+          ? t("taperTooLong", {
+              maxTaperLength: maxTaperLength.toFixed(1),
+              minEndLengthTotal: 2 * minEndLength,
+            })
+          : `Taper length must be at most ${maxTaperLength.toFixed(1)}mm (total length minus ${2 * minEndLength}mm for ends)`,
       });
     }
   }
@@ -106,7 +125,9 @@ export function validateParameters(
     if (values.wallThickness > maxWallThickness) {
       errors.push({
         parameterId: "wallThickness",
-        message: `Wall thickness cannot exceed ${maxWallThickness.toFixed(1)}mm (half of inner diameter)`,
+        message: t
+          ? t("wallThicknessTooLarge", { maxWallThickness: maxWallThickness.toFixed(1) })
+          : `Wall thickness cannot exceed ${maxWallThickness.toFixed(1)}mm (half of inner diameter)`,
       });
     }
 
@@ -114,7 +135,9 @@ export function validateParameters(
     if (values.wallThickness < 1) {
       errors.push({
         parameterId: "wallThickness",
-        message: "Wall thickness must be at least 1mm for structural integrity",
+        message: t
+          ? t("wallThicknessTooSmall")
+          : "Wall thickness must be at least 1mm for structural integrity",
       });
     }
   }
@@ -128,7 +151,9 @@ export function validateParameters(
     if (ridgeSpacing < values.ridgeWidth) {
       errors.push({
         parameterId: "ridgeCount",
-        message: `Too many ridges for the available space. Maximum ${Math.floor(endLength / values.ridgeWidth) - 1} ridges`,
+        message: t
+          ? t("tooManyRidges", { maxRidges: Math.floor(endLength / values.ridgeWidth) - 1 })
+          : `Too many ridges for the available space. Maximum ${Math.floor(endLength / values.ridgeWidth) - 1} ridges`,
       });
     }
 
@@ -136,7 +161,9 @@ export function validateParameters(
     if (values.ridgeDepth > values.wallThickness) {
       errors.push({
         parameterId: "ridgeDepth",
-        message: "Ridge depth should not exceed wall thickness",
+        message: t
+          ? t("ridgeDepthExceedsWall")
+          : "Ridge depth should not exceed wall thickness",
       });
     }
   }

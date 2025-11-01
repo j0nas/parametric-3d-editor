@@ -1,0 +1,99 @@
+{
+  "Common": {
+    "loading": "Loading...",
+    "export": "Export",
+    "exporting": "Exporting...",
+    "resetView": "Reset View",
+    "dismiss": "Dismiss"
+  },
+  "Catalog": {
+    "title": "Parametric 3D Editor",
+    "subtitle": "Customize and export parametric 3D models",
+    "products": "Products"
+  },
+  "Products": {
+    "hoseAdapter": {
+      "name": "Vacuum Hose Adapter",
+      "shortDescription": "Custom diameter vacuum hose adapter for any size connection",
+      "description": "Customize and export your design",
+      "metadata": {
+        "title": "Vacuum Hose Adapter - Parametric 3D Editor",
+        "description": "Configure and export custom vacuum hose adapters"
+      },
+      "initializing": "Initializing 3D viewer...",
+      "parametersHeading": "Parameters",
+      "dimensionsHeading": "Dimensions",
+      "calculatedDimensionsHeading": "Calculated Dimensions",
+      "regenerating": "Regenerating model...",
+      "parameters": {
+        "innerDiameter": {
+          "label": "Inner Diameter",
+          "help": "Inner diameter of the smaller hose connection"
+        },
+        "outerDiameter": {
+          "label": "Outer Diameter",
+          "help": "Inner diameter of the larger hose connection"
+        },
+        "length": {
+          "label": "Total Length",
+          "help": "Overall length of the adapter"
+        },
+        "wallThickness": {
+          "label": "Wall Thickness",
+          "help": "Thickness of the adapter walls"
+        },
+        "taperLength": {
+          "label": "Taper Length",
+          "help": "Length of the tapered transition between diameters"
+        },
+        "ridgeCount": {
+          "label": "Ridge Count",
+          "help": "Number of grip ridges on each end (0 for smooth)"
+        },
+        "ridgeDepth": {
+          "label": "Ridge Depth",
+          "help": "Depth of grip ridges (only applies if ridge count > 0)"
+        },
+        "ridgeWidth": {
+          "label": "Ridge Width",
+          "help": "Width of each grip ridge"
+        }
+      },
+      "calculatedDimensions": {
+        "smallEndOuterDiameter": "Small End Outer Diameter",
+        "largeEndOuterDiameter": "Large End Outer Diameter",
+        "endSectionLength": "End Section Length",
+        "diameterDifference": "Diameter Difference",
+        "ridgeSpacing": "Ridge Spacing"
+      }
+    }
+  },
+  "ParameterControl": {
+    "sliderAriaLabel": "{label} slider"
+  },
+  "ExportPanel": {
+    "exportFormat": "Export format:",
+    "stlLabel": "STL",
+    "stlDescription": "(3D printing)",
+    "stepLabel": "STEP",
+    "stepDescription": "(CAD editing)",
+    "exportButton": "Export {format}",
+    "exportFailed": "Export failed: {error}"
+  },
+  "Validation": {
+    "required": "{label} is required",
+    "min": "{label} must be at least {min}{unit}",
+    "max": "{label} must be at most {max}{unit}",
+    "step": "{label} must be a multiple of {step}{unit}",
+    "outerGreaterThanInner": "Outer diameter must be greater than inner diameter",
+    "outerAtLeast2mmLarger": "Outer diameter must be at least 2mm larger than inner diameter",
+    "taperTooLong": "Taper length must be at most {maxTaperLength}mm (total length minus {minEndLengthTotal}mm for ends)",
+    "wallThicknessTooLarge": "Wall thickness cannot exceed {maxWallThickness}mm (half of inner diameter)",
+    "wallThicknessTooSmall": "Wall thickness must be at least 1mm for structural integrity",
+    "tooManyRidges": "Too many ridges for the available space. Maximum {maxRidges} ridges",
+    "ridgeDepthExceedsWall": "Ridge depth should not exceed wall thickness"
+  },
+  "Units": {
+    "mm": "mm"
+  }
+}
