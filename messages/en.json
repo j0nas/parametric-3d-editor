@@ -66,6 +66,61 @@
         "diameterDifference": "Diameter Difference",
         "ridgeSpacing": "Ridge Spacing"
       }
+    },
+    "drainStrainer": {
+      "name": "Custom Drain Strainer",
+      "shortDescription": "Customizable sink drain strainer with perforated drainage holes",
+      "description": "Design your perfect drain strainer",
+      "metadata": {
+        "title": "Custom Drain Strainer - Parametric 3D Editor",
+        "description": "Configure and export custom drain strainers"
+      },
+      "initializing": "Initializing 3D viewer...",
+      "parametersHeading": "Parameters",
+      "dimensionsHeading": "Dimensions",
+      "calculatedDimensionsHeading": "Calculated Dimensions",
+      "regenerating": "Regenerating model...",
+      "parameters": {
+        "diameter": {
+          "label": "Overall Diameter",
+          "help": "Total diameter of the strainer to fit your drain"
+        },
+        "depth": {
+          "label": "Basket Depth",
+          "help": "How deep the strainer basket extends into the drain"
+        },
+        "rimHeight": {
+          "label": "Rim Height",
+          "help": "Height of the flat rim that sits on top of the drain"
+        },
+        "wallThickness": {
+          "label": "Wall Thickness",
+          "help": "Thickness of the strainer walls and rim"
+        },
+        "holeDiameter": {
+          "label": "Hole Diameter",
+          "help": "Size of each drainage hole"
+        },
+        "holeRows": {
+          "label": "Hole Rows",
+          "help": "Number of concentric circular rows of holes"
+        },
+        "holesPerRow": {
+          "label": "Holes Per Row",
+          "help": "Approximate number of holes in each row"
+        },
+        "centerPost": {
+          "label": "Center Post Height",
+          "help": "Height of center post for easy removal (0 = no post)"
+        }
+      },
+      "calculatedDimensions": {
+        "outerDiameter": "Outer Diameter",
+        "innerDiameter": "Inner Diameter",
+        "totalHeight": "Total Height",
+        "basketDepth": "Basket Depth",
+        "approximateHoles": "Approximate Holes"
+      }
     }
   },
   "ParameterControl": {
@@ -81,17 +136,28 @@
     "exportFailed": "Export failed: {error}"
   },
   "Validation": {
-    "required": "{label} is required",
-    "min": "{label} must be at least {min}{unit}",
-    "max": "{label} must be at most {max}{unit}",
-    "step": "{label} must be a multiple of {step}{unit}",
-    "outerGreaterThanInner": "Outer diameter must be greater than inner diameter",
-    "outerAtLeast2mmLarger": "Outer diameter must be at least 2mm larger than inner diameter",
-    "taperTooLong": "Taper length must be at most {maxTaperLength}mm (total length minus {minEndLengthTotal}mm for ends)",
-    "wallThicknessTooLarge": "Wall thickness cannot exceed {maxWallThickness}mm (half of inner diameter)",
-    "wallThicknessTooSmall": "Wall thickness must be at least 1mm for structural integrity",
-    "tooManyRidges": "Too many ridges for the available space. Maximum {maxRidges} ridges",
-    "ridgeDepthExceedsWall": "Ridge depth should not exceed wall thickness"
+    "common": {
+      "required": "{label} is required",
+      "min": "{label} must be at least {min}{unit}",
+      "max": "{label} must be at most {max}{unit}",
+      "step": "{label} must be a multiple of {step}{unit}"
+    },
+    "hoseAdapter": {
+      "outerGreaterThanInner": "Outer diameter must be greater than inner diameter",
+      "outerAtLeast2mmLarger": "Outer diameter must be at least 2mm larger than inner diameter",
+      "taperTooLong": "Taper length must be at most {maxTaperLength}mm (total length minus {minEndLengthTotal}mm for ends)",
+      "wallThicknessTooLarge": "Wall thickness cannot exceed {maxWallThickness}mm (half of inner diameter)",
+      "wallThicknessTooSmall": "Wall thickness must be at least 1mm for structural integrity",
+      "tooManyRidges": "Too many ridges for the available space. Maximum {maxRidges} ridges",
+      "ridgeDepthExceedsWall": "Ridge depth should not exceed wall thickness"
+    },
+    "drainStrainer": {
+      "holeTooLargeForDiameter": "Hole diameter is too large for the strainer diameter",
+      "holeDiameterExcessive": "Hole diameter should not exceed 1/4 of strainer diameter",
+      "centerPostTooTall": "Center post height should not exceed twice the basket depth",
+      "rimHeightExceedsDepth": "Rim height should not exceed basket depth",
+      "tooManyHoleRows": "Too many hole rows for strainer size - reduce rows or hole diameter"
+    }
   },
   "Units": {
     "mm": "mm"

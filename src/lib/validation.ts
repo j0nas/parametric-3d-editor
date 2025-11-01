@@ -11,22 +11,33 @@ import type {
 } from "@/types/parameters";
 
 /**
+ * Custom validation function type
+ * Products can provide domain-specific validation logic
+ */
+export type CustomValidation<T extends (...args: any[]) => string = (...args: any[]) => string> = (
+  values: ParameterValues,
+  t?: T
+) => ValidationError[];
+
+/**
  * Validate parameter values against their schema definitions
  *
  * Checks:
  * - Values are within min/max bounds
  * - Values conform to step increments
- * - Domain-specific constraints are met
+ * - Custom domain-specific constraints (if provided)
  *
  * @param schema - Parameter schema with validation constraints
  * @param values - Current parameter values to validate
  * @param t - Optional translation function for error messages
+ * @param customValidation - Optional product-specific validation function
  * @returns Validation result with any errors found
  */
-export function validateParameters(
+export function validateParameters<T extends (...args: any[]) => string>(
   schema: ParameterSchema,
   values: ParameterValues,
-  t?: (key: string, params?: Record<string, string | number | Date>) => string
+  t?: T,
+  customValidation?: CustomValidation<T>
 ): ValidationResult {
   const errors: ValidationError[] = [];
 
@@ -39,7 +50,7 @@ export function validateParameters(
       errors.push({
         parameterId: key,
         message: t
-          ? t("required", { label: definition.label })
+          ? t("common.required", { label: definition.label })
           : `${definition.label} is required`,
       });
       continue;
@@ -50,7 +61,7 @@ export function validateParameters(
       errors.push({
         parameterId: key,
         message: t
-          ? t("min", { label: definition.label, min: definition.min, unit: definition.unit })
+          ? t("common.min", { label: definition.label, min: definition.min, unit: definition.unit })
           : `${definition.label} must be at least ${definition.min}${definition.unit}`,
       });
     }
@@ -59,7 +70,7 @@ export function validateParameters(
       errors.push({
         parameterId: key,
         message: t
-          ? t("max", { label: definition.label, max: definition.max, unit: definition.unit })
+          ? t("common.max", { label: definition.label, max: definition.max, unit: definition.unit })
           : `${definition.label} must be at most ${definition.max}${definition.unit}`,
       });
     }
@@ -71,101 +82,16 @@ export function validateParameters(
       errors.push({
         parameterId: key,
         message: t
-          ? t("step", { label: definition.label, step: definition.step, unit: definition.unit })
+          ? t("common.step", { label: definition.label, step: definition.step, unit: definition.unit })
           : `${definition.label} must be a multiple of ${definition.step}${definition.unit}`,
       });
     }
   }
 
-  // Domain-specific validation rules for hose adapter
-  if (values.outerDiameter && values.innerDiameter) {
-    if (values.outerDiameter <= values.innerDiameter) {
-      errors.push({
-        parameterId: "outerDiameter",
-        message: t
-          ? t("outerGreaterThanInner")
-          : "Outer diameter must be greater than inner diameter",
-      });
-    }
-
-    // Check if the difference is too small (would result in invalid taper)
-    const diameterDiff = values.outerDiameter - values.innerDiameter;
-    if (diameterDiff < 2) {
-      errors.push({
-        parameterId: "outerDiameter",
-        message: t
-          ? t("outerAtLeast2mmLarger")
-          : "Outer diameter must be at least 2mm larger than inner diameter",
-      });
-    }
-  }
-
-  // Validate taper length
-  if (values.taperLength && values.length) {
-    const minEndLength = 10; // Minimum 10mm for each end
-    const maxTaperLength = values.length - 2 * minEndLength;
-
-    if (values.taperLength > maxTaperLength) {
-      errors.push({
-        parameterId: "taperLength",
-        message: t
-          ? t("taperTooLong", {
-              maxTaperLength: maxTaperLength.toFixed(1),
-              minEndLengthTotal: 2 * minEndLength,
-            })
-          : `Taper length must be at most ${maxTaperLength.toFixed(1)}mm (total length minus ${2 * minEndLength}mm for ends)`,
-      });
-    }
-  }
-
-  // Validate wall thickness
-  if (values.wallThickness && values.innerDiameter) {
-    // Wall thickness should be reasonable relative to diameter
-    const maxWallThickness = values.innerDiameter / 2;
-    if (values.wallThickness > maxWallThickness) {
-      errors.push({
-        parameterId: "wallThickness",
-        message: t
-          ? t("wallThicknessTooLarge", { maxWallThickness: maxWallThickness.toFixed(1) })
-          : `Wall thickness cannot exceed ${maxWallThickness.toFixed(1)}mm (half of inner diameter)`,
-      });
-    }
-
-    // Minimum wall thickness for structural integrity
-    if (values.wallThickness < 1) {
-      errors.push({
-        parameterId: "wallThickness",
-        message: t
-          ? t("wallThicknessTooSmall")
-          : "Wall thickness must be at least 1mm for structural integrity",
-      });
-    }
-  }
-
-  // Validate ridge parameters
-  if (values.ridgeCount && values.ridgeCount > 0) {
-    const endLength = (values.length - values.taperLength) / 2;
-
-    // Check if there's enough space for ridges
-    const ridgeSpacing = endLength / (values.ridgeCount + 1);
-    if (ridgeSpacing < values.ridgeWidth) {
-      errors.push({
-        parameterId: "ridgeCount",
-        message: t
-          ? t("tooManyRidges", { maxRidges: Math.floor(endLength / values.ridgeWidth) - 1 })
-          : `Too many ridges for the available space. Maximum ${Math.floor(endLength / values.ridgeWidth) - 1} ridges`,
-      });
-    }
-
-    // Ridge depth should be reasonable
-    if (values.ridgeDepth > values.wallThickness) {
-      errors.push({
-        parameterId: "ridgeDepth",
-        message: t
-          ? t("ridgeDepthExceedsWall")
-          : "Ridge depth should not exceed wall thickness",
-      });
-    }
+  // Run custom product-specific validation if provided
+  if (customValidation) {
+    const customErrors = customValidation(values, t);
+    errors.push(...customErrors);
   }
 
   return {
@@ -214,71 +140,34 @@ export interface DynamicConstraints {
 }
 
 /**
+ * Custom dynamic constraints calculator type
+ * Products can provide logic to adjust parameter ranges based on other values
+ */
+export type CustomConstraintsCalculator = (
+  schema: ParameterSchema,
+  values: ParameterValues
+) => Record<string, DynamicConstraints>;
+
+/**
  * Calculate dynamic constraints for parameters based on current values
  * This allows sliders to automatically adjust their ranges based on interdependencies
  *
  * @param schema - Parameter schema
  * @param values - Current parameter values
+ * @param customCalculator - Optional product-specific constraint calculator
  * @returns Map of parameter IDs to their dynamic constraints
  */
 export function calculateDynamicConstraints(
   schema: ParameterSchema,
-  values: ParameterValues
+  values: ParameterValues,
+  customCalculator?: CustomConstraintsCalculator
 ): Record<string, DynamicConstraints> {
-  const constraints: Record<string, DynamicConstraints> = {};
-
-  // Calculate dynamic max for taperLength based on total length
-  if (values.length !== undefined) {
-    const minEndLength = 10; // Minimum 10mm for each end
-    const maxTaperLength = values.length - 2 * minEndLength;
-    constraints.taperLength = {
-      max: Math.max(schema.taperLength?.min || 0, maxTaperLength),
-    };
+  // Use custom calculator if provided, otherwise return empty constraints
+  if (customCalculator) {
+    return customCalculator(schema, values);
   }
 
-  // Calculate dynamic max for ridgeCount based on available space
-  if (
-    values.length !== undefined &&
-    values.taperLength !== undefined &&
-    values.ridgeWidth !== undefined
-  ) {
-    const endLength = (values.length - values.taperLength) / 2;
-    // Need space for ridges: ridgeSpacing >= ridgeWidth
-    // ridgeSpacing = endLength / (ridgeCount + 1)
-    // So: endLength / (ridgeCount + 1) >= ridgeWidth
-    // Therefore: ridgeCount <= (endLength / ridgeWidth) - 1
-    const maxRidgeCount = Math.max(0, Math.floor(endLength / values.ridgeWidth) - 1);
-    constraints.ridgeCount = {
-      max: Math.min(schema.ridgeCount?.max || 8, maxRidgeCount),
-    };
-  }
-
-  // Calculate dynamic max for wallThickness based on inner diameter
-  if (values.innerDiameter !== undefined) {
-    const maxWallThickness = values.innerDiameter / 2;
-    constraints.wallThickness = {
-      max: Math.min(schema.wallThickness?.max || 10, maxWallThickness),
-    };
-  }
-
-  // Calculate dynamic max for ridgeDepth based on wall thickness
-  if (values.wallThickness !== undefined) {
-    constraints.ridgeDepth = {
-      max: Math.min(schema.ridgeDepth?.max || 3, values.wallThickness),
-    };
-  }
-
-  // Calculate dynamic min for outerDiameter based on innerDiameter
-  if (values.innerDiameter !== undefined) {
-    constraints.outerDiameter = {
-      min: Math.max(
-        schema.outerDiameter?.min || 0,
-        values.innerDiameter + 2 // At least 2mm larger
-      ),
-    };
-  }
-
-  return constraints;
+  return {};
 }
 
 /**
@@ -308,11 +197,13 @@ export function getEffectiveConstraints(
  *
  * @param schema - Parameter schema
  * @param values - Current parameter values
+ * @param customCalculator - Optional product-specific constraint calculator
  * @returns Adjusted parameter values that satisfy all constraints
  */
 export function adjustToValidConstraints(
   schema: ParameterSchema,
-  values: ParameterValues
+  values: ParameterValues,
+  customCalculator?: CustomConstraintsCalculator
 ): ParameterValues {
   const adjusted = { ...values };
   let changed = true;
@@ -325,7 +216,7 @@ export function adjustToValidConstraints(
     changed = false;
     iterations++;
 
-    const dynamicConstraints = calculateDynamicConstraints(schema, adjusted);
+    const dynamicConstraints = calculateDynamicConstraints(schema, adjusted, customCalculator);
 
     for (const [key, definition] of Object.entries(schema)) {
       const currentValue = adjusted[key];

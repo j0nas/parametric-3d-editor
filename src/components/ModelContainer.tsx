@@ -17,6 +17,8 @@ type ReplicadShape = any; // Will be the actual Replicad shape type
 interface ModelContainerProps {
   /** Parameter values for model generation */
   parameters: ParameterValues;
+  /** Model builder function that generates geometry from parameters */
+  modelBuilder: (params: ParameterValues) => any;
   /** Callback when loading state changes */
   onLoadingChange?: (loading: boolean) => void;
   /** Callback when shape is generated (for export) */
@@ -25,6 +27,7 @@ interface ModelContainerProps {
 
 export default function ModelContainer({
   parameters,
+  modelBuilder,
   onLoadingChange,
   onShapeChange,
 }: ModelContainerProps) {
@@ -36,6 +39,12 @@ export default function ModelContainer({
 
   // Track if Replicad has been initialized
   const isInitialized = useRef(false);
+
+  // Track generation requests to ignore stale responses
+  const generationIdRef = useRef(0);
+
+  // Store previous mesh for cleanup
+  const previousMeshRef = useRef<THREE.Mesh | null>(null);
 
   // Update loading state callback
   useEffect(() => {
@@ -50,6 +59,9 @@ export default function ModelContainer({
   // Generate/regenerate model when parameters change
   useEffect(() => {
     async function generateModel() {
+      // Increment generation ID to track this request
+      const currentGenerationId = ++generationIdRef.current;
+
       try {
         setLoading(true);
         setError(null);
@@ -61,29 +73,65 @@ export default function ModelContainer({
           isInitialized.current = true;
         }
 
-        // Dynamically import Replicad modules (client-side only)
-        const { buildHoseAdapter } = await import("@/models/hoseAdapter");
+        // Dynamically import mesh converter (client-side only)
         const { createMeshFromShape } = await import("@/lib/meshConverter");
 
-        // Build the Replicad model with current parameters
-        const replicadShape = buildHoseAdapter(parameters);
+        // Build the Replicad model with current parameters using provided builder
+        const replicadShape = modelBuilder(parameters);
 
         // Convert to Three.js mesh
         const threeMesh = await createMeshFromShape(replicadShape, 0.1, 0x5588ff);
 
+        // Ignore stale responses (a newer request has started)
+        if (currentGenerationId !== generationIdRef.current) {
+          // Dispose of this mesh since we won't use it
+          threeMesh.geometry.dispose();
+          if (threeMesh.material instanceof THREE.Material) {
+            threeMesh.material.dispose();
+          }
+          return;
+        }
+
+        // Dispose of previous mesh to prevent memory leaks
+        if (previousMeshRef.current) {
+          previousMeshRef.current.geometry.dispose();
+          if (previousMeshRef.current.material instanceof THREE.Material) {
+            previousMeshRef.current.material.dispose();
+          }
+        }
+
         // Update both mesh (for viewer) and shape (for export)
         setMesh(threeMesh);
         setShape(replicadShape);
+        previousMeshRef.current = threeMesh;
       } catch (err) {
-        console.error("Error generating model:", err);
-        setError(err instanceof Error ? err.message : "Failed to generate model");
+        // Only show error if this is still the latest request
+        if (currentGenerationId === generationIdRef.current) {
+          console.error("Error generating model:", err);
+          setError(err instanceof Error ? err.message : "Failed to generate model");
+        }
       } finally {
-        setLoading(false);
+        // Only update loading state if this is still the latest request
+        if (currentGenerationId === generationIdRef.current) {
+          setLoading(false);
+        }
       }
     }
 
     generateModel();
   }, [parameters]); // Regenerate whenever parameters change
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (previousMeshRef.current) {
+        previousMeshRef.current.geometry.dispose();
+        if (previousMeshRef.current.material instanceof THREE.Material) {
+          previousMeshRef.current.material.dispose();
+        }
+      }
+    };
+  }, []);
 
   // Reset view handler
   const handleResetView = () => {

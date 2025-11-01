@@ -66,6 +66,61 @@
         "diameterDifference": "Diameterforskjell",
         "ridgeSpacing": "Rilleavstand"
       }
+    },
+    "drainStrainer": {
+      "name": "Tilpasset sluk-sil",
+      "shortDescription": "Tilpassbar vask sluk-sil med perforerte dreneringshull",
+      "description": "Design din perfekte sluk-sil",
+      "metadata": {
+        "title": "Tilpasset sluk-sil - Parametrisk 3D-redigering",
+        "description": "Konfigurer og eksporter tilpassede sluk-siler"
+      },
+      "initializing": "Starter 3D-visning...",
+      "parametersHeading": "Parametere",
+      "dimensionsHeading": "Dimensjoner",
+      "calculatedDimensionsHeading": "Beregnede dimensjoner",
+      "regenerating": "Regenererer modell...",
+      "parameters": {
+        "diameter": {
+          "label": "Total diameter",
+          "help": "Total diameter på silen for å passe ditt sluk"
+        },
+        "depth": {
+          "label": "Kurvdybde",
+          "help": "Hvor dypt silkurven strekker seg ned i sluket"
+        },
+        "rimHeight": {
+          "label": "Kanthøyde",
+          "help": "Høyde på den flate kanten som hviler på toppen av sluket"
+        },
+        "wallThickness": {
+          "label": "Veggtykkelse",
+          "help": "Tykkelse på silveggene og kanten"
+        },
+        "holeDiameter": {
+          "label": "Hulldiameter",
+          "help": "Størrelse på hvert dreneringshull"
+        },
+        "holeRows": {
+          "label": "Hullrader",
+          "help": "Antall konsentriske sirkulære rader med hull"
+        },
+        "holesPerRow": {
+          "label": "Hull per rad",
+          "help": "Omtrentlig antall hull i hver rad"
+        },
+        "centerPost": {
+          "label": "Senterstolpehøyde",
+          "help": "Høyde på senterstolpe for enkel fjerning (0 = ingen stolpe)"
+        }
+      },
+      "calculatedDimensions": {
+        "outerDiameter": "Ytre diameter",
+        "innerDiameter": "Indre diameter",
+        "totalHeight": "Total høyde",
+        "basketDepth": "Kurvdybde",
+        "approximateHoles": "Omtrentlige hull"
+      }
     }
   },
   "ParameterControl": {
@@ -81,17 +136,28 @@
     "exportFailed": "Eksportering mislyktes: {error}"
   },
   "Validation": {
-    "required": "{label} er påkrevd",
-    "min": "{label} må være minst {min}{unit}",
-    "max": "{label} må være maks {max}{unit}",
-    "step": "{label} må være et multiplum av {step}{unit}",
-    "outerGreaterThanInner": "Ytre diameter må være større enn indre diameter",
-    "outerAtLeast2mmLarger": "Ytre diameter må være minst 2 mm større enn indre diameter",
-    "taperTooLong": "Avsmalnende lengde må være maks {maxTaperLength} mm (total lengde minus {minEndLengthTotal} mm for endene)",
-    "wallThicknessTooLarge": "Veggtykkelse kan ikke overstige {maxWallThickness} mm (halvparten av indre diameter)",
-    "wallThicknessTooSmall": "Veggtykkelse må være minst 1 mm for strukturell integritet",
-    "tooManyRidges": "For mange riller for tilgjengelig plass. Maksimalt {maxRidges} riller",
-    "ridgeDepthExceedsWall": "Rilledybde bør ikke overstige veggtykkelse"
+    "common": {
+      "required": "{label} er påkrevd",
+      "min": "{label} må være minst {min}{unit}",
+      "max": "{label} må være maks {max}{unit}",
+      "step": "{label} må være et multiplum av {step}{unit}"
+    },
+    "hoseAdapter": {
+      "outerGreaterThanInner": "Ytre diameter må være større enn indre diameter",
+      "outerAtLeast2mmLarger": "Ytre diameter må være minst 2 mm større enn indre diameter",
+      "taperTooLong": "Avsmalnende lengde må være maks {maxTaperLength} mm (total lengde minus {minEndLengthTotal} mm for endene)",
+      "wallThicknessTooLarge": "Veggtykkelse kan ikke overstige {maxWallThickness} mm (halvparten av indre diameter)",
+      "wallThicknessTooSmall": "Veggtykkelse må være minst 1 mm for strukturell integritet",
+      "tooManyRidges": "For mange riller for tilgjengelig plass. Maksimalt {maxRidges} riller",
+      "ridgeDepthExceedsWall": "Rilledybde bør ikke overstige veggtykkelse"
+    },
+    "drainStrainer": {
+      "holeTooLargeForDiameter": "Hulldiameter er for stor for silens diameter",
+      "holeDiameterExcessive": "Hulldiameter bør ikke overstige 1/4 av silens diameter",
+      "centerPostTooTall": "Senterstolpehøyde bør ikke overstige dobbelt kurvdybde",
+      "rimHeightExceedsDepth": "Kanthøyde bør ikke overstige kurvdybde",
+      "tooManyHoleRows": "For mange hullrader for silens størrelse - reduser rader eller hulldiameter"
+    }
   },
   "Units": {
     "mm": "mm"

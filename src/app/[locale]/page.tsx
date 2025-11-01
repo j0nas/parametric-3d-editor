@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
+import { getAllProducts } from "@/products";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Catalog");
@@ -16,15 +17,14 @@ export default function CatalogPage() {
   const t = useTranslations("Catalog");
   const tProducts = useTranslations("Products");
 
-  const products = [
-    {
-      id: "hoseAdapter",
-      href: "/hose-adapter",
-      name: tProducts("hoseAdapter.name"),
-      description: tProducts("hoseAdapter.shortDescription"),
-    },
-    // Add more products here as they are implemented
-  ];
+  // Auto-generate product list from registry
+  const allProducts = getAllProducts();
+  const products = allProducts.map((product) => ({
+    id: product.id,
+    href: `/${product.slug}`,
+    name: tProducts(`${product.id}.name` as any),
+    description: tProducts(`${product.id}.shortDescription` as any),
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">

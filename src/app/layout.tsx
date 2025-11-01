@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+// Initialize product registry (side-effect import)
+import "@/products";
+
 export const metadata: Metadata = {
   title: "Parametric 3D Editor",
   description: "Configure and export parametric 3D models",

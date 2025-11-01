@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "build": "npm run validate:translations && next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate:translations": "node scripts/validate-translations.js"
   },
   "dependencies": {
     "@radix-ui/react-slider": "^1.3.6",

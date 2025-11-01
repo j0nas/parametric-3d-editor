@@ -18,11 +18,13 @@ Each product = separate Next.js page (SEO). Customer adjusts parameters → sees
 ## Current State: MVP Phase 1 (Export Only)
 
 ✅ **Implemented:**
-- Single product: vacuum hose adapter
-- 5-8 adjustable parameters (diameters, lengths, wall thickness)
+- Two products: vacuum hose adapter & drain strainer
+- Product registry architecture (scalable multi-product platform)
+- 5-8 adjustable parameters per product (diameters, lengths, wall thickness)
 - Real-time 3D preview
-- Parameter validation (bounds, domain rules, printability)
+- Parameter validation (bounds, domain rules, printability, dynamic constraints)
 - Export STL/STEP files
+- Internationalization (English + Norwegian)
 - Offline-capable (client-side WASM)
 
 🚧 **MVP Phase 2 (Target):**
@@ -79,38 +81,63 @@ page.tsx (state container)
 
 ### Key Patterns
 
-1. **Schema-driven** — `HOSE_ADAPTER_SCHEMA` defines parameters, validation, UI generation
-2. **Client-only WASM** — dynamic imports with `ssr: false` (WASM requires browser)
-3. **Debounced regeneration** — 300ms delay prevents excessive computation
-4. **Optimistic UI** — sliders update instantly, model regenerates after validation
-5. **Exact preview** — same geometry source for preview and export (no approximation)
+1. **Product registry** — Centralized configuration system for scalable multi-product architecture
+2. **Schema-driven** — Parameter schemas define validation, UI generation, and translations
+3. **Client-only WASM** — dynamic imports with `ssr: false` (WASM requires browser)
+4. **Debounced regeneration** — 300ms delay prevents excessive computation
+5. **Optimistic UI** — sliders update instantly, model regenerates after validation
+6. **Exact preview** — same geometry source for preview and export (no approximation)
 
 ## File Organization
 
 ```
 /src
   /app
-    layout.tsx          # Root layout, fonts
-    page.tsx            # Main editor (state orchestrator)
-    globals.css         # Tailwind + custom styles
+    /[locale]
+      /[productSlug]
+        page.tsx          # Generic product page (all products)
+      page.tsx            # Product catalog homepage
+    layout.tsx            # Root layout, i18n setup
+    globals.css           # Tailwind + custom styles
   /components
-    ParameterPanel.tsx  # Parameter list, validation display
-    ParameterControl.tsx # Single parameter slider + input
-    ModelContainer.tsx  # Geometry generation, mesh conversion
-    ModelViewer.tsx     # Three.js scene, camera, lighting
-    ExportPanel.tsx     # Format selector, export button
+    ParameterPanel.tsx    # Parameter list, validation display
+    ParameterControl.tsx  # Single parameter slider + input
+    ModelContainer.tsx    # Geometry generation, mesh conversion
+    ModelViewer.tsx       # Three.js scene, camera, lighting
+    ExportPanel.tsx       # Format selector, export button
+  /products
+    registry.ts           # Product registry (central config)
+    index.ts              # Product registration (side-effects)
+    /hoseAdapter
+      config.ts           # Product registration
+      schema.ts           # Parameter schema
+      builder.ts          # Geometry generation (re-export)
+      validation.ts       # Custom validation (re-export)
+      dimensions.ts       # Calculated dimensions display
+    /drainStrainer
+      config.ts           # Product registration
+      schema.ts           # Parameter schema
+      builder.ts          # Geometry generation (re-export)
+      validation.ts       # Custom validation (re-export)
+      dimensions.ts       # Calculated dimensions display
   /lib
-    validation.ts       # Parameter bounds/domain validation
-    rounding.ts         # Precision/snapping utilities
-    replicadInit.ts     # WASM initialization (singleton)
-    meshConverter.ts    # Replicad solid → Three.js mesh
-    exportModel.ts      # STL/STEP file generation
+    validation.ts         # Parameter bounds/domain validation
+    rounding.ts           # Precision/snapping utilities
+    replicadInit.ts       # WASM initialization (singleton)
+    meshConverter.ts      # Replicad solid → Three.js mesh
+    exportModel.ts        # STL/STEP file generation
   /models
-    hoseAdapter.ts      # Parametric geometry definition
+    hoseAdapter.ts        # Hose adapter geometry builder
+    hoseAdapterValidation.ts  # Hose adapter validation
+    drainStrainer.ts      # Drain strainer geometry builder
+    drainStrainerValidation.ts # Drain strainer validation
   /types
-    parameters.ts       # TypeScript schemas, interfaces
+    parameters.ts         # Generic TypeScript interfaces
+/messages
+  en.json                 # English translations
+  nb.json                 # Norwegian translations
 /public
-  replicad_single.wasm  # OpenCASCADE binary
+  replicad_single.wasm    # OpenCASCADE binary
 ```
 
 ## Setup
@@ -133,29 +160,152 @@ Next.js configured for WASM + SharedArrayBuffer:
 
 ## Adding New Products
 
-1. **Create parameter schema** in `src/types/`
+The product registry system makes adding new products straightforward. Adding a new product requires **~50 lines of code** across **5 files**, with automatic integration into the UI, routing, and catalog.
+
+### Quick Start (5 files, ~30-60 minutes)
+
+1. **Create product directory:** `/src/products/yourProduct/`
+
+2. **Create `config.ts`** (15 lines):
    ```typescript
-   export const DRAIN_STRAINER_SCHEMA: ParameterSchema = {
-     holeDiameter: { min: 2, max: 10, default: 5, ... },
-     holeSpacing: { min: 8, max: 20, default: 12, ... },
-     // ...
-   };
+   import { registerProduct } from '../registry';
+   import { buildYourProduct } from './builder';
+   import { validateYourProduct, calculateYourProductConstraints } from './validation';
+   import { YOUR_PRODUCT_SCHEMA, getTranslatedYourProductSchema } from './schema';
+   import { calculateYourProductDimensions } from './dimensions';
+
+   registerProduct({
+     id: 'yourProduct',
+     slug: 'your-product',
+     baseSchema: YOUR_PRODUCT_SCHEMA,
+     schemaFactory: getTranslatedYourProductSchema,
+     modelBuilder: buildYourProduct,
+     customValidation: validateYourProduct,
+     constraintsCalculator: calculateYourProductConstraints,
+     dimensionsCalculator: calculateYourProductDimensions, // optional
+     translationNamespace: 'Products.yourProduct',
+   });
    ```
 
-2. **Define geometry** in `src/models/`
+3. **Create `schema.ts`** (40+ lines):
    ```typescript
-   export async function generateDrainStrainer(params: ParameterValues) {
-     // Use Replicad API to construct solid
+   import type { ParameterSchema } from "@/types/parameters";
+
+   export const YOUR_PRODUCT_SCHEMA: ParameterSchema = {
+     diameter: {
+       id: "diameter",
+       label: "Diameter",
+       help: "Overall diameter",
+       min: 10,
+       max: 100,
+       default: 50,
+       step: 1,
+       unit: "mm",
+       precision: 0,
+     },
+     // ... other parameters
+   };
+
+   export function getTranslatedYourProductSchema<T extends (...args: any[]) => string>(
+     t: T
+   ): ParameterSchema {
+     return {
+       diameter: {
+         ...YOUR_PRODUCT_SCHEMA.diameter,
+         label: t("diameter.label"),
+         help: t("diameter.help"),
+       },
+       // ... other parameters with translations
+     };
    }
    ```
 
-3. **Create product page** at `src/app/drain-strainer/page.tsx`
-   - Copy `src/app/page.tsx` structure
-   - Swap in new schema + generator
+4. **Create `builder.ts`** (re-export from `/src/models`):
+   ```typescript
+   export { buildYourProduct } from "@/models/yourProduct";
+   ```
 
-4. **Add validation rules** in `src/lib/validation.ts`
-   - Domain-specific constraints
-   - Printability checks
+5. **Create `validation.ts`** (re-export from `/src/models`):
+   ```typescript
+   export {
+     validateYourProduct,
+     calculateYourProductConstraints
+   } from "@/models/yourProductValidation";
+   ```
+
+6. **Update `/src/products/index.ts`** (1 line):
+   ```typescript
+   import './yourProduct/config';
+   ```
+
+7. **Add translations to `messages/en.json` and `messages/nb.json`**:
+   ```json
+   "Products": {
+     "yourProduct": {
+       "name": "Your Product Name",
+       "shortDescription": "Brief description for catalog",
+       "parameters": {
+         "diameter": {
+           "label": "Diameter",
+           "help": "Overall diameter of the product"
+         }
+       }
+     }
+   }
+   ```
+
+8. **Create geometry builder in `/src/models/yourProduct.ts`** (60+ lines):
+   ```typescript
+   import type { ParameterValues } from "@/types/parameters";
+
+   export function buildYourProduct(params: ParameterValues) {
+     const { diameter } = params;
+     // ... Replicad geometry construction
+   }
+   ```
+
+9. **Create validation in `/src/models/yourProductValidation.ts`** (30+ lines):
+   ```typescript
+   import type { ValidationError, ParameterValues, ParameterSchema } from "@/types/parameters";
+   import type { DynamicConstraints } from "@/lib/validation";
+
+   export function validateYourProduct<T extends (...args: any[]) => string>(
+     values: ParameterValues,
+     t?: T
+   ): ValidationError[] {
+     const errors: ValidationError[] = [];
+     // ... custom validation logic
+     return errors;
+   }
+
+   export function calculateYourProductConstraints(
+     schema: ParameterSchema,
+     values: ParameterValues
+   ): Record<string, DynamicConstraints> {
+     // ... dynamic constraints calculation
+     return {};
+   }
+   ```
+
+**That's it!** The following are automatically handled:
+- ✅ Product page at `/your-product`
+- ✅ Routing and navigation
+- ✅ Catalog entry on homepage
+- ✅ Parameter UI and validation
+- ✅ Export functionality (STL/STEP)
+- ✅ Internationalization support
+- ✅ Type safety throughout
+
+### Product Registry Architecture
+
+The product registry (`/src/products/registry.ts`) provides a centralized configuration system that:
+- **Eliminates code duplication** — Single generic page component serves all products
+- **Enforces consistency** — All products follow identical patterns
+- **Enables discoverability** — Products auto-register on app initialization
+- **Scales effortlessly** — Add unlimited products without architectural changes
+
+### Type Safety
+Translation function parameters use generic type constraints (`T extends (...args: any[]) => string`) to preserve type safety while accepting translation functions from any next-intl namespace. This ensures the parameter is a function returning `string` while allowing next-intl's strict key typing at call sites. Message key validation is enforced by `src/global.d.ts` type augmentation.
 
 ## Key Constraints
 
@@ -255,9 +405,11 @@ WASM requires proper MIME types + CORS headers in production.
 
 ## Related Docs
 
-- `SPEC.md` — Detailed MVP requirements
-- `src/types/parameters.ts` — Parameter schema reference
+- `REFACTORING_ROADMAP.md` — Multi-product refactoring history and architecture decisions
+- `src/types/parameters.ts` — Generic parameter type definitions
+- `src/products/registry.ts` — Product registry implementation
 - `src/models/hoseAdapter.ts` — Geometry construction example
+- `src/models/drainStrainer.ts` — Drain strainer geometry example
 
 ## Key Decisions
 

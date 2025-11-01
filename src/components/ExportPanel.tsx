@@ -19,6 +19,7 @@ interface ExportPanelProps {
 
 export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
   const t = useTranslations("ExportPanel");
+  const tCommon = useTranslations("Common");
   const [format, setFormat] = useState<ExportFormat>("stl");
   const [exporting, setExporting] = useState(false);
 
@@ -86,7 +87,7 @@ export default function ExportPanel({ disabled, onExport }: ExportPanelProps) {
         className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
       >
         {exporting
-          ? t("exporting")
+          ? tCommon("exporting")
           : t("exportButton", { format: format.toUpperCase() })}
       </button>
     </div>

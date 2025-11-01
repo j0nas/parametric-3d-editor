@@ -16,10 +16,12 @@ import {
   validateParameters,
   getParameterErrorMessage,
   calculateDynamicConstraints,
+  type CustomValidation,
+  type CustomConstraintsCalculator,
 } from "@/lib/validation";
 import ParameterControl from "./ParameterControl";
 
-interface ParameterPanelProps {
+interface ParameterPanelProps<T extends (...args: any[]) => string = (...args: any[]) => string> {
   /** Parameter schema defining all parameters */
   schema: ParameterSchema;
   /** Current parameter values */
@@ -28,6 +30,14 @@ interface ParameterPanelProps {
   onChange: (values: ParameterValues) => void;
   /** Loading state (disables inputs during regeneration) */
   loading?: boolean;
+  /** Optional custom validation function for product-specific rules */
+  customValidation?: CustomValidation;
+  /** Optional custom constraints calculator for product-specific dynamic ranges */
+  customConstraintsCalculator?: CustomConstraintsCalculator;
+  /** Translation namespace for the product (e.g., "Products.hoseAdapter") */
+  translationNamespace: string;
+  /** Optional dimensions calculator for displaying calculated dimensions */
+  dimensionsCalculator?: (values: ParameterValues, t: T) => Array<{ label: string; value: number }>;
 }
 
 export default function ParameterPanel({
@@ -35,8 +45,12 @@ export default function ParameterPanel({
   values,
   onChange,
   loading = false,
+  customValidation,
+  customConstraintsCalculator,
+  translationNamespace,
+  dimensionsCalculator,
 }: ParameterPanelProps) {
-  const t = useTranslations("Products.hoseAdapter");
+  const t = useTranslations(translationNamespace as any) as any;
   const tValidation = useTranslations("Validation");
 
   // Local state for immediate UI updates (before debounce)
@@ -58,9 +72,14 @@ export default function ParameterPanel({
 
   // Validate whenever local values change
   useEffect(() => {
-    const validationResult = validateParameters(schema, localValues, tValidation);
+    const validationResult = validateParameters(
+      schema,
+      localValues,
+      tValidation,
+      customValidation
+    );
     setValidation(validationResult);
-  }, [localValues, schema, tValidation]);
+  }, [localValues, schema, tValidation, customValidation]);
 
   // Handle parameter change with debouncing
   const handleParameterChange = useCallback(
@@ -80,13 +99,18 @@ export default function ParameterPanel({
       // Set new debounce timer (300ms)
       debounceTimer.current = setTimeout(() => {
         // Only propagate change if validation passes
-        const validationResult = validateParameters(schema, newValues, tValidation);
+        const validationResult = validateParameters(
+          schema,
+          newValues,
+          tValidation,
+          customValidation
+        );
         if (validationResult.isValid) {
           onChange(newValues);
         }
       }, 300);
     },
-    [localValues, onChange, schema, tValidation]
+    [localValues, onChange, schema, tValidation, customValidation]
   );
 
   // Cleanup debounce timer on unmount
@@ -98,11 +122,15 @@ export default function ParameterPanel({
     };
   }, []);
 
-  // Calculate dimension readouts
-  const dimensions = calculateDimensions(localValues, t);
+  // Calculate dimension readouts (if calculator provided)
+  const dimensions = dimensionsCalculator ? dimensionsCalculator(localValues, t) : [];
 
   // Calculate dynamic constraints for interdependent parameters
-  const dynamicConstraints = calculateDynamicConstraints(schema, localValues);
+  const dynamicConstraints = calculateDynamicConstraints(
+    schema,
+    localValues,
+    customConstraintsCalculator
+  );
 
   return (
     <div className="space-y-6">
@@ -125,24 +153,26 @@ export default function ParameterPanel({
       </div>
 
       {/* Dimension Readouts */}
-      <div className="border-t border-gray-200 pt-4">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-          {t("calculatedDimensionsHeading")}
-        </h3>
-        <div className="space-y-2">
-          {dimensions.map((dim) => (
-            <div
-              key={dim.label}
-              className="flex justify-between items-center text-sm"
-            >
-              <span className="text-gray-600">{dim.label}:</span>
-              <span className="font-medium text-gray-900">
-                {dim.value.toFixed(dim.precision ?? 1)} {dim.unit}
-              </span>
-            </div>
-          ))}
+      {dimensions.length > 0 && (
+        <div className="border-t border-gray-200 pt-4">
+          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
+            {t("calculatedDimensionsHeading")}
+          </h3>
+          <div className="space-y-2">
+            {dimensions.map((dim, index) => (
+              <div
+                key={dim.label || index}
+                className="flex justify-between items-center text-sm"
+              >
+                <span className="text-gray-600">{dim.label}:</span>
+                <span className="font-medium text-gray-900">
+                  {dim.value.toFixed(1)} mm
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Status Indicator */}
       {loading && (
@@ -177,59 +207,3 @@ export default function ParameterPanel({
   );
 }
 
-/**
- * Calculate derived dimensions from parameter values
- */
-function calculateDimensions(
-  values: ParameterValues,
-  t: (key: string) => string
-) {
-  const {
-    innerDiameter = 0,
-    outerDiameter = 0,
-    wallThickness = 0,
-    length = 0,
-    taperLength = 0,
-    ridgeCount = 0,
-  } = values;
-
-  const dimensions = [
-    {
-      label: t("calculatedDimensions.smallEndOuterDiameter"),
-      value: innerDiameter + 2 * wallThickness,
-      unit: "mm",
-      precision: 1,
-    },
-    {
-      label: t("calculatedDimensions.largeEndOuterDiameter"),
-      value: outerDiameter + 2 * wallThickness,
-      unit: "mm",
-      precision: 1,
-    },
-    {
-      label: t("calculatedDimensions.endSectionLength"),
-      value: (length - taperLength) / 2,
-      unit: "mm",
-      precision: 1,
-    },
-    {
-      label: t("calculatedDimensions.diameterDifference"),
-      value: outerDiameter - innerDiameter,
-      unit: "mm",
-      precision: 1,
-    },
-  ];
-
-  // Add ridge spacing if ridges are present
-  if (ridgeCount > 0) {
-    const endLength = (length - taperLength) / 2;
-    dimensions.push({
-      label: t("calculatedDimensions.ridgeSpacing"),
-      value: endLength / (ridgeCount + 1),
-      unit: "mm",
-      precision: 1,
-    });
-  }
-
-  return dimensions;
-}
