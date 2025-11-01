@@ -8,6 +8,7 @@
 import { useState, useEffect, useRef } from "react";
 import * as Slider from "@radix-ui/react-slider";
 import type { ParameterDefinition } from "@/types/parameters";
+import type { DynamicConstraints } from "@/lib/validation";
 import { roundParameter } from "@/lib/rounding";
 
 interface ParameterControlProps {
@@ -21,6 +22,8 @@ interface ParameterControlProps {
   error?: string;
   /** Disabled state */
   disabled?: boolean;
+  /** Dynamic constraints that override schema min/max */
+  dynamicConstraints?: DynamicConstraints;
 }
 
 export default function ParameterControl({
@@ -29,13 +32,24 @@ export default function ParameterControl({
   onChange,
   error,
   disabled = false,
+  dynamicConstraints,
 }: ParameterControlProps) {
+  // Calculate effective min/max (dynamic constraints override schema)
+  const effectiveMin =
+    dynamicConstraints?.min !== undefined
+      ? dynamicConstraints.min
+      : definition.min;
+  const effectiveMax =
+    dynamicConstraints?.max !== undefined
+      ? dynamicConstraints.max
+      : definition.max;
+
   // Local state for the input field (allows typing intermediate values)
   const [inputValue, setInputValue] = useState(value.toString());
 
   // Track whether the field has been touched (blurred at least once)
-  // Start as true if there's an error on mount (validation runs immediately)
-  const [touched, setTouched] = useState(!!error);
+  // Changed: Don't show errors on mount, only after user interaction
+  const [touched, setTouched] = useState(false);
 
   // Track whether the user is actively typing
   const [isTyping, setIsTyping] = useState(false);
@@ -54,12 +68,16 @@ export default function ParameterControl({
     }
   }, [value, isTyping]);
 
-  // Mark as touched if an error appears (validation ran and found issues)
+  // Auto-adjust value if it exceeds dynamic constraints
   useEffect(() => {
-    if (error && !touched) {
-      setTouched(true);
+    if (value < effectiveMin || value > effectiveMax) {
+      const clampedValue = Math.max(effectiveMin, Math.min(effectiveMax, value));
+      const rounded = roundParameter(clampedValue, definition);
+      if (rounded !== value) {
+        onChange(rounded);
+      }
     }
-  }, [error, touched]);
+  }, [value, effectiveMin, effectiveMax, onChange, definition]);
 
   // Handle input change (allows user to type freely, including empty strings)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,8 +202,8 @@ export default function ParameterControl({
               value={[value]}
               onValueChange={handleSliderChange}
               disabled={disabled}
-              min={definition.min}
-              max={definition.max}
+              min={effectiveMin}
+              max={effectiveMax}
               step={definition.step}
               aria-label={`${definition.label} slider`}
               className="relative flex items-center select-none touch-none w-full h-5"
@@ -230,8 +248,8 @@ export default function ParameterControl({
 
         {/* Min/Max labels under slider */}
         <div className="flex justify-between text-xs text-gray-400 px-0.5">
-          <span>{definition.min}</span>
-          <span>{definition.max}</span>
+          <span>{effectiveMin}</span>
+          <span>{effectiveMax}</span>
         </div>
       </div>
 

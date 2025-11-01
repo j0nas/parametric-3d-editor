@@ -7,7 +7,10 @@ import {
   getDefaultValues,
   type ParameterValues,
 } from "@/types/parameters";
-import { validateParameters } from "@/lib/validation";
+import {
+  validateParameters,
+  adjustToValidConstraints,
+} from "@/lib/validation";
 import { exportModel, getTimestampedFilename } from "@/lib/exportModel";
 import type { ExportFormat } from "@/components/ExportPanel";
 
@@ -30,10 +33,11 @@ const ExportPanel = dynamic(() => import("@/components/ExportPanel"), {
 });
 
 export default function Home() {
-  // Parameter state
-  const [parameters, setParameters] = useState<ParameterValues>(
-    getDefaultValues(HOSE_ADAPTER_SCHEMA)
-  );
+  // Parameter state - adjust defaults to be valid on initial load
+  const [parameters, setParameters] = useState<ParameterValues>(() => {
+    const defaults = getDefaultValues(HOSE_ADAPTER_SCHEMA);
+    return adjustToValidConstraints(HOSE_ADAPTER_SCHEMA, defaults);
+  });
 
   // Loading state for model regeneration
   const [isRegenerating, setIsRegenerating] = useState(false);

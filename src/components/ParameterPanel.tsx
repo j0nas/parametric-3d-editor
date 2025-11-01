@@ -11,7 +11,11 @@ import type {
   ParameterValues,
   ValidationResult,
 } from "@/types/parameters";
-import { validateParameters, getParameterErrorMessage } from "@/lib/validation";
+import {
+  validateParameters,
+  getParameterErrorMessage,
+  calculateDynamicConstraints,
+} from "@/lib/validation";
 import ParameterControl from "./ParameterControl";
 
 interface ParameterPanelProps {
@@ -93,6 +97,9 @@ export default function ParameterPanel({
   // Calculate dimension readouts
   const dimensions = calculateDimensions(localValues);
 
+  // Calculate dynamic constraints for interdependent parameters
+  const dynamicConstraints = calculateDynamicConstraints(schema, localValues);
+
   return (
     <div className="space-y-6">
       {/* Parameter Controls */}
@@ -108,6 +115,7 @@ export default function ParameterPanel({
             onChange={(newValue) => handleParameterChange(key, newValue)}
             error={getParameterErrorMessage(validation, key)}
             disabled={loading}
+            dynamicConstraints={dynamicConstraints[key]}
           />
         ))}
       </div>
