@@ -34,22 +34,32 @@ export function calculateDrainStrainerDimensions(
     {
       label: t("calculatedDimensions.outerDiameter"),
       value: diameter,
+      unit: "mm",
+      precision: 1,
     },
     {
       label: t("calculatedDimensions.innerDiameter"),
       value: innerDiameter,
+      unit: "mm",
+      precision: 1,
     },
     {
       label: t("calculatedDimensions.totalHeight"),
       value: totalHeight,
+      unit: "mm",
+      precision: 1,
     },
     {
       label: t("calculatedDimensions.basketDepth"),
       value: depth,
+      unit: "mm",
+      precision: 1,
     },
     {
       label: t("calculatedDimensions.approximateHoles"),
       value: approximateHoles,
+      unit: "",
+      precision: 0,
     },
   ];
 }

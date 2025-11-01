@@ -8,6 +8,9 @@ import type {
   ParameterValues,
   ValidationResult,
   ValidationError,
+  NumberParameterDefinition,
+  EnumParameterDefinition,
+  BooleanParameterDefinition,
 } from "@/types/parameters";
 
 /**
@@ -56,35 +59,75 @@ export function validateParameters<T extends (...args: any[]) => string>(
       continue;
     }
 
-    // Check min/max bounds
-    if (value < definition.min) {
-      errors.push({
-        parameterId: key,
-        message: t
-          ? t("common.min", { label: definition.label, min: definition.min, unit: definition.unit })
-          : `${definition.label} must be at least ${definition.min}${definition.unit}`,
-      });
-    }
+    // Type-specific validation
+    const paramType = definition.type || "number";
 
-    if (value > definition.max) {
-      errors.push({
-        parameterId: key,
-        message: t
-          ? t("common.max", { label: definition.label, max: definition.max, unit: definition.unit })
-          : `${definition.label} must be at most ${definition.max}${definition.unit}`,
-      });
-    }
+    if (paramType === "number") {
+      // Number parameter validation
+      const numDef = definition as NumberParameterDefinition;
 
-    // Check step increment (with floating-point tolerance)
-    const stepsFromMin = (value - definition.min) / definition.step;
-    const tolerance = 0.0001;
-    if (Math.abs(stepsFromMin - Math.round(stepsFromMin)) > tolerance) {
-      errors.push({
-        parameterId: key,
-        message: t
-          ? t("common.step", { label: definition.label, step: definition.step, unit: definition.unit })
-          : `${definition.label} must be a multiple of ${definition.step}${definition.unit}`,
-      });
+      // Check min/max bounds
+      if (value < numDef.min) {
+        errors.push({
+          parameterId: key,
+          message: t
+            ? t("common.min", { label: numDef.label, min: numDef.min, unit: numDef.unit })
+            : `${numDef.label} must be at least ${numDef.min}${numDef.unit}`,
+        });
+      }
+
+      if (value > numDef.max) {
+        errors.push({
+          parameterId: key,
+          message: t
+            ? t("common.max", { label: numDef.label, max: numDef.max, unit: numDef.unit })
+            : `${numDef.label} must be at most ${numDef.max}${numDef.unit}`,
+        });
+      }
+
+      // Check step increment (with floating-point tolerance)
+      const stepsFromMin = (value - numDef.min) / numDef.step;
+      const tolerance = 0.0001;
+      if (Math.abs(stepsFromMin - Math.round(stepsFromMin)) > tolerance) {
+        errors.push({
+          parameterId: key,
+          message: t
+            ? t("common.step", { label: numDef.label, step: numDef.step, unit: numDef.unit })
+            : `${numDef.label} must be a multiple of ${numDef.step}${numDef.unit}`,
+        });
+      }
+    } else if (paramType === "enum") {
+      // Enum parameter validation - check if value is one of the valid options
+      const enumDef = definition as EnumParameterDefinition;
+      const validValues = enumDef.options.map(opt => opt.value);
+      if (!validValues.includes(value)) {
+        errors.push({
+          parameterId: key,
+          message: t
+            ? t("common.invalidOption", { label: enumDef.label })
+            : `${enumDef.label} has an invalid value`,
+        });
+      }
+    } else if (paramType === "boolean") {
+      // Boolean parameter validation - check if value is 0 or 1
+      if (value !== 0 && value !== 1) {
+        errors.push({
+          parameterId: key,
+          message: t
+            ? t("common.invalidBoolean", { label: definition.label })
+            : `${definition.label} must be true or false`,
+        });
+      }
+    } else if (paramType === "color") {
+      // Color parameter validation - check if value is a valid RGB number (0-16777215)
+      if (value < 0 || value > 0xFFFFFF || !Number.isInteger(value)) {
+        errors.push({
+          parameterId: key,
+          message: t
+            ? t("common.invalidColor", { label: definition.label })
+            : `${definition.label} has an invalid color value`,
+        });
+      }
     }
   }
 
@@ -172,6 +215,7 @@ export function calculateDynamicConstraints(
 
 /**
  * Get the effective constraints (schema + dynamic) for a parameter
+ * Only applicable to number-type parameters
  */
 export function getEffectiveConstraints(
   schema: ParameterSchema,
@@ -183,11 +227,17 @@ export function getEffectiveConstraints(
     throw new Error(`Parameter ${parameterId} not found in schema`);
   }
 
+  // Only number parameters have min/max constraints
+  if (definition.type && definition.type !== "number") {
+    throw new Error(`getEffectiveConstraints only applies to number parameters, but ${parameterId} is type ${definition.type}`);
+  }
+
+  const numDef = definition as NumberParameterDefinition;
   const dynamic = dynamicConstraints[parameterId] || {};
 
   return {
-    min: dynamic.min !== undefined ? dynamic.min : definition.min,
-    max: dynamic.max !== undefined ? dynamic.max : definition.max,
+    min: dynamic.min !== undefined ? dynamic.min : numDef.min,
+    max: dynamic.max !== undefined ? dynamic.max : numDef.max,
   };
 }
 
@@ -222,6 +272,13 @@ export function adjustToValidConstraints(
       const currentValue = adjusted[key];
       if (currentValue === undefined) continue;
 
+      // Only adjust number-type parameters (others don't have min/max/step)
+      const paramType = definition.type || "number";
+      if (paramType !== "number") {
+        continue;
+      }
+
+      const numDef = definition as NumberParameterDefinition;
       const constraints = getEffectiveConstraints(
         schema,
         key,
@@ -239,8 +296,8 @@ export function adjustToValidConstraints(
       }
 
       // Round to nearest step
-      const stepsFromMin = Math.round((newValue - definition.min) / definition.step);
-      newValue = definition.min + stepsFromMin * definition.step;
+      const stepsFromMin = Math.round((newValue - numDef.min) / numDef.step);
+      newValue = numDef.min + stepsFromMin * numDef.step;
 
       if (newValue !== currentValue) {
         adjusted[key] = newValue;

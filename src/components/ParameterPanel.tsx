@@ -19,6 +19,7 @@ import {
   type CustomValidation,
   type CustomConstraintsCalculator,
 } from "@/lib/validation";
+import type { DimensionReadout } from "@/products/registry";
 import ParameterControl from "./ParameterControl";
 
 interface ParameterPanelProps<T extends (...args: any[]) => string = (...args: any[]) => string> {
@@ -37,7 +38,7 @@ interface ParameterPanelProps<T extends (...args: any[]) => string = (...args: a
   /** Translation namespace for the product (e.g., "Products.hoseAdapter") */
   translationNamespace: string;
   /** Optional dimensions calculator for displaying calculated dimensions */
-  dimensionsCalculator?: (values: ParameterValues, t: T) => Array<{ label: string; value: number }>;
+  dimensionsCalculator?: (values: ParameterValues, t: T) => DimensionReadout[];
 }
 
 export default function ParameterPanel({
@@ -159,17 +160,21 @@ export default function ParameterPanel({
             {t("calculatedDimensionsHeading")}
           </h3>
           <div className="space-y-2">
-            {dimensions.map((dim, index) => (
-              <div
-                key={dim.label || index}
-                className="flex justify-between items-center text-sm"
-              >
-                <span className="text-gray-600">{dim.label}:</span>
-                <span className="font-medium text-gray-900">
-                  {dim.value.toFixed(1)} mm
-                </span>
-              </div>
-            ))}
+            {dimensions.map((dim, index) => {
+              const precision = dim.precision ?? 1;
+              const unit = dim.unit ?? "mm";
+              return (
+                <div
+                  key={dim.label || index}
+                  className="flex justify-between items-center text-sm"
+                >
+                  <span className="text-gray-600">{dim.label}:</span>
+                  <span className="font-medium text-gray-900">
+                    {dim.value.toFixed(precision)}{unit ? ` ${unit}` : ""}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

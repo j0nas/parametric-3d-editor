@@ -7,6 +7,7 @@ import type {
   ParameterSchema,
   ParameterValues,
   ParameterDefinition,
+  NumberParameterDefinition,
 } from "@/types/parameters";
 
 /**
@@ -77,7 +78,8 @@ export function snapToNozzle(value: number, nozzleSize: number = 0.4): number {
 /**
  * Round a parameter value according to its schema definition
  *
- * Applies the parameter's step size and precision constraints
+ * Applies the parameter's step size and precision constraints.
+ * Only applies to number-type parameters; other types return the value unchanged.
  *
  * @param value - Value to round
  * @param definition - Parameter definition with step and precision
@@ -87,20 +89,28 @@ export function roundParameter(
   value: number,
   definition: ParameterDefinition
 ): number {
+  // Only round numeric parameters; return other types unchanged
+  if (definition.type && definition.type !== "number") {
+    return value;
+  }
+
+  // Type assertion safe here because we've checked type === "number" or undefined
+  const numDef = definition as NumberParameterDefinition;
+
   // First snap to the parameter's step size
-  let rounded = snapToMultiple(value, definition.step);
+  let rounded = snapToMultiple(value, numDef.step);
 
   // Then apply resolution rounding
   rounded = roundToResolution(rounded, RESOLUTION);
 
   // Finally, apply precision constraints if specified
-  if (definition.precision !== undefined) {
-    const factor = Math.pow(10, definition.precision);
+  if (numDef.precision !== undefined) {
+    const factor = Math.pow(10, numDef.precision);
     rounded = Math.round(rounded * factor) / factor;
   }
 
   // Clamp to min/max bounds
-  rounded = Math.max(definition.min, Math.min(definition.max, rounded));
+  rounded = Math.max(numDef.min, Math.min(numDef.max, rounded));
 
   return rounded;
 }

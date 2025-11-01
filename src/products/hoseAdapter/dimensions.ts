@@ -29,18 +29,26 @@ export function calculateHoseAdapterDimensions(
     {
       label: t("calculatedDimensions.smallEndOuterDiameter"),
       value: innerDiameter + 2 * wallThickness,
+      unit: "mm",
+      precision: 1,
     },
     {
       label: t("calculatedDimensions.largeEndOuterDiameter"),
       value: outerDiameter + 2 * wallThickness,
+      unit: "mm",
+      precision: 1,
     },
     {
       label: t("calculatedDimensions.endSectionLength"),
       value: (length - taperLength) / 2,
+      unit: "mm",
+      precision: 1,
     },
     {
       label: t("calculatedDimensions.diameterDifference"),
       value: outerDiameter - innerDiameter,
+      unit: "mm",
+      precision: 1,
     },
   ];
 
@@ -50,6 +58,8 @@ export function calculateHoseAdapterDimensions(
     dimensions.push({
       label: t("calculatedDimensions.ridgeSpacing"),
       value: endLength / (ridgeCount + 1),
+      unit: "mm",
+      precision: 1,
     });
   }
 

@@ -3,7 +3,7 @@
  * Product-specific validation rules and dynamic constraints
  */
 
-import type { ValidationError, ParameterValues, ParameterSchema } from "@/types/parameters";
+import type { ValidationError, ParameterValues, ParameterSchema, NumberParameterDefinition } from "@/types/parameters";
 import type { DynamicConstraints } from "@/lib/validation";
 
 /**
@@ -96,25 +96,28 @@ export function calculateDrainStrainerConstraints(
   const constraints: Record<string, DynamicConstraints> = {};
 
   // Calculate dynamic max for holeDiameter based on strainer diameter
-  if (values.diameter !== undefined) {
+  if (values.diameter !== undefined && schema.holeDiameter) {
+    const holeDiameterDef = schema.holeDiameter as NumberParameterDefinition;
     const maxHoleDiameter = values.diameter / 4; // Max 1/4 of diameter
     constraints.holeDiameter = {
-      max: Math.min(schema.holeDiameter?.max || 10, maxHoleDiameter),
+      max: Math.min(holeDiameterDef.max || 10, maxHoleDiameter),
     };
   }
 
   // Calculate dynamic max for centerPost based on depth
-  if (values.depth !== undefined) {
+  if (values.depth !== undefined && schema.centerPost) {
+    const centerPostDef = schema.centerPost as NumberParameterDefinition;
     const maxCenterPost = values.depth * 2;
     constraints.centerPost = {
-      max: Math.min(schema.centerPost?.max || 20, maxCenterPost),
+      max: Math.min(centerPostDef.max || 20, maxCenterPost),
     };
   }
 
   // Calculate dynamic max for rimHeight based on depth
-  if (values.depth !== undefined) {
+  if (values.depth !== undefined && schema.rimHeight) {
+    const rimHeightDef = schema.rimHeight as NumberParameterDefinition;
     constraints.rimHeight = {
-      max: Math.min(schema.rimHeight?.max || 5, values.depth),
+      max: Math.min(rimHeightDef.max || 5, values.depth),
     };
   }
 

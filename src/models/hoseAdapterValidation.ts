@@ -3,7 +3,7 @@
  * Product-specific validation rules and dynamic constraints
  */
 
-import type { ValidationError, ParameterValues, ParameterSchema } from "@/types/parameters";
+import type { ValidationError, ParameterValues, ParameterSchema, NumberParameterDefinition } from "@/types/parameters";
 import type { DynamicConstraints } from "@/lib/validation";
 
 /**
@@ -121,11 +121,12 @@ export function calculateHoseAdapterConstraints(
   const constraints: Record<string, DynamicConstraints> = {};
 
   // Calculate dynamic max for taperLength based on total length
-  if (values.length !== undefined) {
+  if (values.length !== undefined && schema.taperLength) {
+    const taperLengthDef = schema.taperLength as NumberParameterDefinition;
     const minEndLength = 10; // Minimum 10mm for each end
     const maxTaperLength = values.length - 2 * minEndLength;
     constraints.taperLength = {
-      max: Math.max(schema.taperLength?.min || 0, maxTaperLength),
+      max: Math.max(taperLengthDef.min || 0, maxTaperLength),
     };
   }
 
@@ -133,8 +134,10 @@ export function calculateHoseAdapterConstraints(
   if (
     values.length !== undefined &&
     values.taperLength !== undefined &&
-    values.ridgeWidth !== undefined
+    values.ridgeWidth !== undefined &&
+    schema.ridgeCount
   ) {
+    const ridgeCountDef = schema.ridgeCount as NumberParameterDefinition;
     const endLength = (values.length - values.taperLength) / 2;
     // Need space for ridges: ridgeSpacing >= ridgeWidth
     // ridgeSpacing = endLength / (ridgeCount + 1)
@@ -142,30 +145,33 @@ export function calculateHoseAdapterConstraints(
     // Therefore: ridgeCount <= (endLength / ridgeWidth) - 1
     const maxRidgeCount = Math.max(0, Math.floor(endLength / values.ridgeWidth) - 1);
     constraints.ridgeCount = {
-      max: Math.min(schema.ridgeCount?.max || 8, maxRidgeCount),
+      max: Math.min(ridgeCountDef.max || 8, maxRidgeCount),
     };
   }
 
   // Calculate dynamic max for wallThickness based on inner diameter
-  if (values.innerDiameter !== undefined) {
+  if (values.innerDiameter !== undefined && schema.wallThickness) {
+    const wallThicknessDef = schema.wallThickness as NumberParameterDefinition;
     const maxWallThickness = values.innerDiameter / 2;
     constraints.wallThickness = {
-      max: Math.min(schema.wallThickness?.max || 10, maxWallThickness),
+      max: Math.min(wallThicknessDef.max || 10, maxWallThickness),
     };
   }
 
   // Calculate dynamic max for ridgeDepth based on wall thickness
-  if (values.wallThickness !== undefined) {
+  if (values.wallThickness !== undefined && schema.ridgeDepth) {
+    const ridgeDepthDef = schema.ridgeDepth as NumberParameterDefinition;
     constraints.ridgeDepth = {
-      max: Math.min(schema.ridgeDepth?.max || 3, values.wallThickness),
+      max: Math.min(ridgeDepthDef.max || 3, values.wallThickness),
     };
   }
 
   // Calculate dynamic min for outerDiameter based on innerDiameter
-  if (values.innerDiameter !== undefined) {
+  if (values.innerDiameter !== undefined && schema.outerDiameter) {
+    const outerDiameterDef = schema.outerDiameter as NumberParameterDefinition;
     constraints.outerDiameter = {
       min: Math.max(
-        schema.outerDiameter?.min || 0,
+        outerDiameterDef.min || 0,
         values.innerDiameter + 2 // At least 2mm larger
       ),
     };

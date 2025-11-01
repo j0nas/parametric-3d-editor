@@ -12,6 +12,10 @@ import type { CustomValidation, CustomConstraintsCalculator } from "@/lib/valida
 export interface DimensionReadout {
   label: string;
   value: number;
+  /** Unit of measurement (e.g., "mm", "deg", "" for dimensionless). Defaults to "mm" if not specified */
+  unit?: string;
+  /** Number of decimal places for display. Defaults to 1 if not specified */
+  precision?: number;
 }
 
 /**

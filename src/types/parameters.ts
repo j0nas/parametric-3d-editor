@@ -4,15 +4,39 @@
  */
 
 /**
+ * Parameter type discriminator
+ */
+export type ParameterType = "number" | "enum" | "boolean" | "color";
+
+/**
+ * Enum option for enum-type parameters
+ */
+export interface EnumOption {
+  /** Value stored in parameter values */
+  value: number;
+  /** Display label shown in UI */
+  label: string;
+}
+
+/**
  * Base parameter definition with validation and UI metadata
  */
-export interface ParameterDefinition {
+export interface BaseParameterDefinition {
   /** Unique identifier for the parameter */
   id: string;
   /** Display label shown in UI */
   label: string;
   /** Help text explaining the parameter's purpose */
   help: string;
+  /** Parameter type - determines which control to render */
+  type?: ParameterType;
+}
+
+/**
+ * Number parameter definition (slider + input)
+ */
+export interface NumberParameterDefinition extends BaseParameterDefinition {
+  type?: "number";
   /** Minimum allowed value */
   min: number;
   /** Maximum allowed value */
@@ -26,6 +50,44 @@ export interface ParameterDefinition {
   /** Optional decimal precision for display */
   precision?: number;
 }
+
+/**
+ * Enum parameter definition (dropdown select)
+ */
+export interface EnumParameterDefinition extends BaseParameterDefinition {
+  type: "enum";
+  /** Available options */
+  options: EnumOption[];
+  /** Default value */
+  default: number;
+}
+
+/**
+ * Boolean parameter definition (checkbox/toggle)
+ */
+export interface BooleanParameterDefinition extends BaseParameterDefinition {
+  type: "boolean";
+  /** Default value (0 = false, 1 = true) */
+  default: number;
+}
+
+/**
+ * Color parameter definition (color picker)
+ */
+export interface ColorParameterDefinition extends BaseParameterDefinition {
+  type: "color";
+  /** Default value (RGB as number) */
+  default: number;
+}
+
+/**
+ * Union of all parameter definition types
+ */
+export type ParameterDefinition =
+  | NumberParameterDefinition
+  | EnumParameterDefinition
+  | BooleanParameterDefinition
+  | ColorParameterDefinition;
 
 /**
  * Collection of parameter definitions for a product

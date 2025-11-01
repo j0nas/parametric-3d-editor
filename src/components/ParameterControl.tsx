@@ -8,7 +8,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import * as Slider from "@radix-ui/react-slider";
-import type { ParameterDefinition } from "@/types/parameters";
+import type {
+  ParameterDefinition,
+  NumberParameterDefinition,
+  EnumParameterDefinition,
+  BooleanParameterDefinition,
+  ColorParameterDefinition
+} from "@/types/parameters";
 import type { DynamicConstraints } from "@/lib/validation";
 import { roundParameter } from "@/lib/rounding";
 
@@ -27,6 +33,23 @@ interface ParameterControlProps {
   dynamicConstraints?: DynamicConstraints;
 }
 
+// Type guard functions
+function isNumberParameter(def: ParameterDefinition): def is NumberParameterDefinition {
+  return !def.type || def.type === "number";
+}
+
+function isEnumParameter(def: ParameterDefinition): def is EnumParameterDefinition {
+  return def.type === "enum";
+}
+
+function isBooleanParameter(def: ParameterDefinition): def is BooleanParameterDefinition {
+  return def.type === "boolean";
+}
+
+function isColorParameter(def: ParameterDefinition): def is ColorParameterDefinition {
+  return def.type === "color";
+}
+
 export default function ParameterControl({
   definition,
   value,
@@ -35,6 +58,41 @@ export default function ParameterControl({
   disabled = false,
   dynamicConstraints,
 }: ParameterControlProps) {
+  const t = useTranslations("ParameterControl");
+
+  // Type-specific rendering
+  if (isEnumParameter(definition)) {
+    return <EnumControl definition={definition} value={value} onChange={onChange} error={error} disabled={disabled} />;
+  }
+
+  if (isBooleanParameter(definition)) {
+    return <BooleanControl definition={definition} value={value} onChange={onChange} error={error} disabled={disabled} />;
+  }
+
+  if (isColorParameter(definition)) {
+    return <ColorControl definition={definition} value={value} onChange={onChange} error={error} disabled={disabled} />;
+  }
+
+  // Default to number parameter
+  return <NumberControl definition={definition} value={value} onChange={onChange} error={error} disabled={disabled} dynamicConstraints={dynamicConstraints} />;
+}
+
+// Number parameter control (original implementation)
+function NumberControl({
+  definition,
+  value,
+  onChange,
+  error,
+  disabled = false,
+  dynamicConstraints,
+}: {
+  definition: NumberParameterDefinition;
+  value: number;
+  onChange: (value: number) => void;
+  error?: string;
+  disabled?: boolean;
+  dynamicConstraints?: DynamicConstraints;
+}) {
   const t = useTranslations("ParameterControl");
 
   // Calculate effective min/max (dynamic constraints override schema)
@@ -257,6 +315,214 @@ export default function ParameterControl({
       </div>
 
       {/* Error Message - only show when touched */}
+      {shouldShowError && (
+        <p
+          id={`${definition.id}-error`}
+          className="text-xs text-red-600"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// Enum parameter control (dropdown select)
+function EnumControl({
+  definition,
+  value,
+  onChange,
+  error,
+  disabled = false,
+}: {
+  definition: EnumParameterDefinition;
+  value: number;
+  onChange: (value: number) => void;
+  error?: string;
+  disabled?: boolean;
+}) {
+  const [touched, setTouched] = useState(false);
+  const shouldShowError = touched && error;
+
+  return (
+    <div className="space-y-2">
+      {/* Label and Help */}
+      <div>
+        <label
+          htmlFor={definition.id}
+          className="block text-sm font-medium text-gray-700"
+        >
+          {definition.label}
+        </label>
+        {definition.help && (
+          <p className="text-xs text-gray-500 mt-0.5">{definition.help}</p>
+        )}
+      </div>
+
+      {/* Select Dropdown */}
+      <select
+        id={definition.id}
+        value={value}
+        onChange={(e) => {
+          setTouched(true);
+          onChange(Number(e.target.value));
+        }}
+        disabled={disabled}
+        className={`w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500 ${
+          shouldShowError
+            ? "border-red-300 focus:ring-red-500"
+            : "border-gray-300"
+        }`}
+        aria-invalid={shouldShowError ? "true" : "false"}
+        aria-describedby={shouldShowError ? `${definition.id}-error` : undefined}
+      >
+        {definition.options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+
+      {/* Error Message */}
+      {shouldShowError && (
+        <p
+          id={`${definition.id}-error`}
+          className="text-xs text-red-600"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// Boolean parameter control (toggle switch)
+function BooleanControl({
+  definition,
+  value,
+  onChange,
+  error,
+  disabled = false,
+}: {
+  definition: BooleanParameterDefinition;
+  value: number;
+  onChange: (value: number) => void;
+  error?: string;
+  disabled?: boolean;
+}) {
+  const [touched, setTouched] = useState(false);
+  const shouldShowError = touched && error;
+  const isChecked = value === 1;
+
+  return (
+    <div className="space-y-2">
+      {/* Checkbox + Label */}
+      <div className="flex items-center">
+        <input
+          id={definition.id}
+          type="checkbox"
+          checked={isChecked}
+          onChange={(e) => {
+            setTouched(true);
+            onChange(e.target.checked ? 1 : 0);
+          }}
+          disabled={disabled}
+          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-invalid={shouldShowError ? "true" : "false"}
+          aria-describedby={shouldShowError ? `${definition.id}-error` : undefined}
+        />
+        <label
+          htmlFor={definition.id}
+          className="ml-2 block text-sm font-medium text-gray-700"
+        >
+          {definition.label}
+        </label>
+      </div>
+
+      {/* Help text */}
+      {definition.help && (
+        <p className="text-xs text-gray-500 ml-6">{definition.help}</p>
+      )}
+
+      {/* Error Message */}
+      {shouldShowError && (
+        <p
+          id={`${definition.id}-error`}
+          className="text-xs text-red-600 ml-6"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// Color parameter control (color input)
+function ColorControl({
+  definition,
+  value,
+  onChange,
+  error,
+  disabled = false,
+}: {
+  definition: ColorParameterDefinition;
+  value: number;
+  onChange: (value: number) => void;
+  error?: string;
+  disabled?: boolean;
+}) {
+  const [touched, setTouched] = useState(false);
+  const shouldShowError = touched && error;
+
+  // Convert number to hex color
+  const numberToHex = (num: number): string => {
+    return "#" + num.toString(16).padStart(6, "0");
+  };
+
+  // Convert hex color to number
+  const hexToNumber = (hex: string): number => {
+    return parseInt(hex.replace("#", ""), 16);
+  };
+
+  return (
+    <div className="space-y-2">
+      {/* Label and Help */}
+      <div>
+        <label
+          htmlFor={definition.id}
+          className="block text-sm font-medium text-gray-700"
+        >
+          {definition.label}
+        </label>
+        {definition.help && (
+          <p className="text-xs text-gray-500 mt-0.5">{definition.help}</p>
+        )}
+      </div>
+
+      {/* Color Input */}
+      <div className="flex items-center gap-2">
+        <input
+          id={definition.id}
+          type="color"
+          value={numberToHex(value)}
+          onChange={(e) => {
+            setTouched(true);
+            onChange(hexToNumber(e.target.value));
+          }}
+          disabled={disabled}
+          className="h-10 w-20 border border-gray-300 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-invalid={shouldShowError ? "true" : "false"}
+          aria-describedby={shouldShowError ? `${definition.id}-error` : undefined}
+        />
+        <span className="text-sm text-gray-600 font-mono">
+          {numberToHex(value).toUpperCase()}
+        </span>
+      </div>
+
+      {/* Error Message */}
       {shouldShowError && (
         <p
           id={`${definition.id}-error`}
