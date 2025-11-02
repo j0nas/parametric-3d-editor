@@ -237,6 +237,73 @@
         "basketDepth": "Basket Depth",
         "approximateHoles": "Approximate Holes"
       }
+    },
+    "threadAdapter": {
+      "name": "Universal Thread Adapter",
+      "shortDescription": "Custom adapter for connecting incompatible threaded bottles, hoses, and fittings",
+      "description": "Connect any two thread types with a custom adapter",
+      "metadata": {
+        "title": "Universal Thread Adapter - Parametric 3D Editor",
+        "description": "Configure and export custom thread adapters for bottles, hoses, and fittings"
+      },
+      "initializing": "Initializing 3D viewer...",
+      "parametersHeading": "Parameters",
+      "dimensionsHeading": "Dimensions",
+      "calculatedDimensionsHeading": "Calculated Dimensions",
+      "regenerating": "Regenerating model...",
+      "parameters": {
+        "threadADiameter": {
+          "label": "Thread A Diameter",
+          "help": "Outer diameter of Thread A (source end)"
+        },
+        "threadAPitch": {
+          "label": "Thread A Pitch",
+          "help": "Distance between thread peaks on Thread A"
+        },
+        "threadAType": {
+          "label": "Thread A Type",
+          "help": "Whether Thread A has external (male) or internal (female) threads"
+        },
+        "threadALength": {
+          "label": "Thread A Length",
+          "help": "How deep/long the threaded section extends"
+        },
+        "threadBDiameter": {
+          "label": "Thread B Diameter",
+          "help": "Outer diameter of Thread B (target end)"
+        },
+        "threadBPitch": {
+          "label": "Thread B Pitch",
+          "help": "Distance between thread peaks on Thread B"
+        },
+        "threadBType": {
+          "label": "Thread B Type",
+          "help": "Whether Thread B has external (male) or internal (female) threads"
+        },
+        "threadBLength": {
+          "label": "Thread B Length",
+          "help": "How deep/long the threaded section extends"
+        },
+        "bodyLength": {
+          "label": "Body Length",
+          "help": "Distance between thread transitions (includes taper)"
+        },
+        "hexGripSize": {
+          "label": "Hex Grip Size",
+          "help": "Size of hexagonal grip section for wrench (0 = no hex, round body)"
+        },
+        "hollow": {
+          "label": "Hollow",
+          "help": "Make adapter hollow for fluid/air flow (unchecked = solid, checked = hollow)"
+        }
+      },
+      "calculatedDimensions": {
+        "threadAOuterDiameter": "Thread A Outer Diameter",
+        "threadBOuterDiameter": "Thread B Outer Diameter",
+        "totalLength": "Total Length",
+        "wallThickness": "Minimum Wall Thickness",
+        "innerPassageDiameter": "Inner Passage Diameter"
+      }
     }
   },
   "ParameterControl": {
@@ -273,6 +340,12 @@
       "centerPostTooTall": "Center post height should not exceed twice the basket depth",
       "rimHeightExceedsDepth": "Rim height should not exceed basket depth",
       "tooManyHoleRows": "Too many hole rows for strainer size - reduce rows or hole diameter"
+    },
+    "threadAdapter": {
+      "diameterTooSmall": "Minimum diameter is 12mm for structural integrity",
+      "threadLengthTooLong": "Thread length cannot exceed 60% of diameter",
+      "hexGripTooSmall": "Hex grip size must be at least 4mm larger than the maximum thread diameter, or set to 0 for round body",
+      "pitchTooSmall": "Thread pitch must be at least 0.8mm for printability"
     }
   },
   "Units": {

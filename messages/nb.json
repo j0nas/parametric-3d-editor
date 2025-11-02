@@ -237,6 +237,73 @@
         "basketDepth": "Kurvdybde",
         "approximateHoles": "Omtrentlige hull"
       }
+    },
+    "threadAdapter": {
+      "name": "Universal gjenge-adapter",
+      "shortDescription": "Tilpasset adapter for å koble inkompatible gjengede flasker, slanger og fittings",
+      "description": "Koble sammen to ulike gjengetyper med en tilpasset adapter",
+      "metadata": {
+        "title": "Universal gjenge-adapter - Parametrisk 3D-redigering",
+        "description": "Konfigurer og eksporter tilpassede gjenge-adaptere for flasker, slanger og fittings"
+      },
+      "initializing": "Starter 3D-visning...",
+      "parametersHeading": "Parametere",
+      "dimensionsHeading": "Dimensjoner",
+      "calculatedDimensionsHeading": "Beregnede dimensjoner",
+      "regenerating": "Regenererer modell...",
+      "parameters": {
+        "threadADiameter": {
+          "label": "Gjenge A diameter",
+          "help": "Ytre diameter på gjenge A (kildeende)"
+        },
+        "threadAPitch": {
+          "label": "Gjenge A stigning",
+          "help": "Avstand mellom gjengetopper på gjenge A"
+        },
+        "threadAType": {
+          "label": "Gjenge A type",
+          "help": "Om gjenge A har ytre (hann) eller indre (hunn) gjenger"
+        },
+        "threadALength": {
+          "label": "Gjenge A lengde",
+          "help": "Hvor dyp/lang gjengeseksjonen strekker seg"
+        },
+        "threadBDiameter": {
+          "label": "Gjenge B diameter",
+          "help": "Ytre diameter på gjenge B (målende)"
+        },
+        "threadBPitch": {
+          "label": "Gjenge B stigning",
+          "help": "Avstand mellom gjengetopper på gjenge B"
+        },
+        "threadBType": {
+          "label": "Gjenge B type",
+          "help": "Om gjenge B har ytre (hann) eller indre (hunn) gjenger"
+        },
+        "threadBLength": {
+          "label": "Gjenge B lengde",
+          "help": "Hvor dyp/lang gjengeseksjonen strekker seg"
+        },
+        "bodyLength": {
+          "label": "Kroppslengde",
+          "help": "Avstand mellom gjengeoverganger (inkluderer avsmalnende del)"
+        },
+        "hexGripSize": {
+          "label": "Heksagonalt grep størrelse",
+          "help": "Størrelse på sekskantgrep for skiftenøkkel (0 = ingen sekskant, rund kropp)"
+        },
+        "hollow": {
+          "label": "Hul",
+          "help": "Gjør adapteren hul for væske/luftstrøm (av = solid, på = hul)"
+        }
+      },
+      "calculatedDimensions": {
+        "threadAOuterDiameter": "Gjenge A ytre diameter",
+        "threadBOuterDiameter": "Gjenge B ytre diameter",
+        "totalLength": "Total lengde",
+        "wallThickness": "Minimum veggtykkelse",
+        "innerPassageDiameter": "Indre passasje diameter"
+      }
     }
   },
   "ParameterControl": {
@@ -273,6 +340,12 @@
       "centerPostTooTall": "Senterstolpehøyde bør ikke overstige dobbelt kurvdybde",
       "rimHeightExceedsDepth": "Kanthøyde bør ikke overstige kurvdybde",
       "tooManyHoleRows": "For mange hullrader for silens størrelse - reduser rader eller hulldiameter"
+    },
+    "threadAdapter": {
+      "diameterTooSmall": "Minimum diameter er 12mm for strukturell integritet",
+      "threadLengthTooLong": "Gjengelengde kan ikke overstige 60% av diameter",
+      "hexGripTooSmall": "Heksagonalt grep størrelse må være minst 4mm større enn maksimal gjenge diameter, eller sett til 0 for rund kropp",
+      "pitchTooSmall": "Gjenge stigning må være minst 0,8mm for utskriftbarhet"
     }
   },
   "Units": {
