@@ -50,27 +50,51 @@
     "howItWorks": {
       "heading": "How It Works",
       "subheading": "From configuration to delivery in three simple steps",
+      "badge": "Simple Process",
       "stepLabel": "Step {number}",
       "step1": {
         "title": "Configure Your Product",
         "description": "Use intuitive sliders to adjust every parameter. See validation feedback in real-time to ensure your design is printable.",
         "feature1": "Adjust all dimensions with precision sliders",
         "feature2": "Real-time validation prevents printing errors",
-        "feature3": "See exact measurements as you customize"
+        "feature3": "See exact measurements as you customize",
+        "mockup": {
+          "title": "Parameters",
+          "innerDiameter": "Inner Diameter",
+          "outerDiameter": "Outer Diameter",
+          "length": "Length",
+          "wallThickness": "Wall Thickness"
+        }
       },
       "step2": {
         "title": "Preview in 3D",
         "description": "Watch your custom product render instantly in high-quality 3D. Rotate, zoom, and inspect from every angle.",
         "feature1": "Full 360° rotation and zoom controls",
         "feature2": "Renders in under 2 seconds",
-        "feature3": "Exact preview of final product"
+        "feature3": "Exact preview of final product",
+        "mockup": {
+          "rotate": "Rotate",
+          "zoom": "Zoom",
+          "reset": "Reset",
+          "modelValid": "Model Valid"
+        }
       },
       "step3": {
         "title": "Order & Receive",
         "description": "Place your order and we handle the rest. Your custom part will be 3D printed and shipped directly to you.",
         "feature1": "Professional 3D printing with quality checks",
         "feature2": "Fast shipping (3-5 business days)",
-        "feature3": "100% satisfaction guarantee"
+        "feature3": "100% satisfaction guarantee",
+        "mockup": {
+          "title": "Order Summary",
+          "readyToOrder": "Ready to Order",
+          "productName": "Custom Hose Adapter",
+          "length": "Length",
+          "qualityVerified": "Quality verified",
+          "shipsIn": "Ships in 3-5 days",
+          "moneyBack": "Money-back guarantee",
+          "placeOrder": "Place Order"
+        }
       }
     },
     "productShowcase": {

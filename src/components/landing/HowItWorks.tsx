@@ -39,7 +39,7 @@ export function HowItWorks() {
             {/* Mock parameter panel */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-gray-900">Parameters</h4>
+                <h4 className="font-semibold text-gray-900">{t("step1.mockup.title")}</h4>
                 <div className="flex gap-1">
                   <div className="h-2 w-2 rounded-full bg-green-500"></div>
                   <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
@@ -48,14 +48,14 @@ export function HowItWorks() {
               </div>
 
               {[
-                { label: "Inner Diameter", value: "35mm", width: "60%" },
-                { label: "Outer Diameter", value: "50mm", width: "75%" },
-                { label: "Length", value: "120mm", width: "85%" },
-                { label: "Wall Thickness", value: "2.5mm", width: "45%" },
+                { labelKey: "step1.mockup.innerDiameter", value: "35mm", width: "60%" },
+                { labelKey: "step1.mockup.outerDiameter", value: "50mm", width: "75%" },
+                { labelKey: "step1.mockup.length", value: "120mm", width: "85%" },
+                { labelKey: "step1.mockup.wallThickness", value: "2.5mm", width: "45%" },
               ].map((param, i) => (
                 <div key={i} className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium text-gray-700">{param.label}</span>
+                    <span className="font-medium text-gray-700">{t(param.labelKey)}</span>
                     <span className="tabular-nums text-blue-600">{param.value}</span>
                   </div>
                   <div className="relative h-2 overflow-hidden rounded-full bg-gray-100">
@@ -102,19 +102,19 @@ export function HowItWorks() {
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
               <div className="flex gap-2 rounded-lg bg-white/10 p-2 backdrop-blur-sm">
                 <button className="rounded bg-white/20 px-3 py-1.5 text-xs text-white hover:bg-white/30">
-                  Rotate
+                  {t("step2.mockup.rotate")}
                 </button>
                 <button className="rounded bg-white/20 px-3 py-1.5 text-xs text-white hover:bg-white/30">
-                  Zoom
+                  {t("step2.mockup.zoom")}
                 </button>
                 <button className="rounded bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-700">
-                  Reset
+                  {t("step2.mockup.reset")}
                 </button>
               </div>
 
               <div className="flex items-center gap-2 rounded-lg bg-green-500/90 px-3 py-1.5 backdrop-blur-sm">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-white"></div>
-                <span className="text-xs font-medium text-white">Model Valid</span>
+                <span className="text-xs font-medium text-white">{t("step2.mockup.modelValid")}</span>
               </div>
             </div>
           </div>
@@ -126,9 +126,9 @@ export function HowItWorks() {
             {/* Order form mockup */}
             <div className="space-y-6 p-6">
               <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-                <h4 className="text-lg font-semibold text-gray-900">Order Summary</h4>
+                <h4 className="text-lg font-semibold text-gray-900">{t("step3.mockup.title")}</h4>
                 <div className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                  Ready to Order
+                  {t("step3.mockup.readyToOrder")}
                 </div>
               </div>
 
@@ -140,10 +140,10 @@ export function HowItWorks() {
                   </svg>
                 </div>
                 <div className="flex-1 space-y-2">
-                  <p className="font-medium text-gray-900">Custom Hose Adapter</p>
+                  <p className="font-medium text-gray-900">{t("step3.mockup.productName")}</p>
                   <div className="space-y-1 text-sm text-gray-600">
                     <p>35mm → 50mm</p>
-                    <p>Length: 120mm</p>
+                    <p>{t("step3.mockup.length")}: 120mm</p>
                   </div>
                 </div>
               </div>
@@ -154,25 +154,25 @@ export function HowItWorks() {
                   <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-sm font-medium text-gray-700">Quality verified</span>
+                  <span className="text-sm font-medium text-gray-700">{t("step3.mockup.qualityVerified")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span className="text-sm font-medium text-gray-700">Ships in 3-5 days</span>
+                  <span className="text-sm font-medium text-gray-700">{t("step3.mockup.shipsIn")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
-                  <span className="text-sm font-medium text-gray-700">Money-back guarantee</span>
+                  <span className="text-sm font-medium text-gray-700">{t("step3.mockup.moneyBack")}</span>
                 </div>
               </div>
 
               {/* CTA Button */}
               <button className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg hover:shadow-xl">
-                Place Order
+                {t("step3.mockup.placeOrder")}
               </button>
             </div>
           </div>
@@ -192,7 +192,7 @@ export function HowItWorks() {
         {/* Section header */}
         <div className="text-center">
           <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700">
-            Simple Process
+            {t("badge")}
           </div>
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
             {t("heading")}

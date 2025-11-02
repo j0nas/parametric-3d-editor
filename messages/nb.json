@@ -50,27 +50,51 @@
     "howItWorks": {
       "heading": "Hvordan det fungerer",
       "subheading": "Fra konfigurasjon til levering i tre enkle trinn",
+      "badge": "Enkel prosess",
       "stepLabel": "Steg {number}",
       "step1": {
         "title": "Konfigurer produktet ditt",
         "description": "Bruk intuitive glidebryere for å justere hver parameter. Se valideringstilbakemelding i sanntid for å sikre at designet ditt kan printes.",
         "feature1": "Juster alle dimensjoner med presisjonsglidere",
         "feature2": "Sanntidsvalidering forhindrer printfeil",
-        "feature3": "Se eksakte mål mens du tilpasser"
+        "feature3": "Se eksakte mål mens du tilpasser",
+        "mockup": {
+          "title": "Parametere",
+          "innerDiameter": "Indre diameter",
+          "outerDiameter": "Ytre diameter",
+          "length": "Lengde",
+          "wallThickness": "Veggtykkelse"
+        }
       },
       "step2": {
         "title": "Forhåndsvis i 3D",
         "description": "Se ditt tilpassede produkt rendres umiddelbart i høykvalitets 3D. Roter, zoom, og inspiser fra alle vinkler.",
         "feature1": "Full 360° rotasjon og zoomkontroller",
         "feature2": "Rendrer på under 2 sekunder",
-        "feature3": "Eksakt forhåndsvisning av sluttprodukt"
+        "feature3": "Eksakt forhåndsvisning av sluttprodukt",
+        "mockup": {
+          "rotate": "Roter",
+          "zoom": "Zoom",
+          "reset": "Tilbakestill",
+          "modelValid": "Modell gyldig"
+        }
       },
       "step3": {
         "title": "Bestill og motta",
         "description": "Legg inn bestillingen din og vi håndterer resten. Din tilpassede del vil bli 3D-printet og sendt direkte til deg.",
         "feature1": "Profesjonell 3D-printing med kvalitetskontroller",
         "feature2": "Rask levering (3-5 virkedager)",
-        "feature3": "100% tilfredshetgaranti"
+        "feature3": "100% tilfredshetgaranti",
+        "mockup": {
+          "title": "Bestillingsoversikt",
+          "readyToOrder": "Klar til bestilling",
+          "productName": "Tilpasset slange-adapter",
+          "length": "Lengde",
+          "qualityVerified": "Kvalitet verifisert",
+          "shipsIn": "Sendes om 3-5 dager",
+          "moneyBack": "Pengene-tilbake-garanti",
+          "placeOrder": "Legg inn bestilling"
+        }
       }
     },
     "productShowcase": {
