@@ -11,6 +11,98 @@
     "subtitle": "Customize and export parametric 3D models",
     "products": "Products"
   },
+  "LandingPage": {
+    "hero": {
+      "badge": "🚀 Now Available",
+      "title": "Custom 3D Printed Products, Made to Your Exact Specifications",
+      "subtitle": "Configure parametric designs in real-time. See instant 3D preview. Place your order and receive the finished printed part.",
+      "ctaPrimary": "Browse Products",
+      "ctaSecondary": "See How It Works",
+      "trustSignal1": "Instant 3D Preview",
+      "trustSignal2": "0.1mm Precision",
+      "previewLabel": "Live 3D Preview",
+      "previewSubLabel": "Real-time rendering",
+      "parameterExample1": "Inner Diameter",
+      "parameterExample2": "Outer Diameter",
+      "updating": "Updating model...",
+      "liveBadge": "LIVE"
+    },
+    "features": {
+      "heading": "Why Choose Our Platform",
+      "subheading": "Everything you need to get the perfect custom part",
+      "parametric": {
+        "title": "Fully Parametric",
+        "description": "Adjust every dimension to your exact specifications. No compromises, no standard sizes—just the perfect fit for your needs."
+      },
+      "browserBased": {
+        "title": "No Software Required",
+        "description": "Works entirely in your browser. No downloads, no plugins, no installation. Just open and start designing."
+      },
+      "realtime": {
+        "title": "Real-Time 3D Preview",
+        "description": "See your customized product instantly rendered in 3D. What you see is exactly what you get."
+      },
+      "ordering": {
+        "title": "Seamless Ordering",
+        "description": "Configure your product, place your order, and receive the finished printed part delivered to your door."
+      }
+    },
+    "howItWorks": {
+      "heading": "How It Works",
+      "subheading": "From configuration to delivery in three simple steps",
+      "stepLabel": "Step {number}",
+      "step1": {
+        "title": "Configure Your Product",
+        "description": "Use intuitive sliders to adjust every parameter. See validation feedback in real-time to ensure your design is printable.",
+        "feature1": "Adjust all dimensions with precision sliders",
+        "feature2": "Real-time validation prevents printing errors",
+        "feature3": "See exact measurements as you customize"
+      },
+      "step2": {
+        "title": "Preview in 3D",
+        "description": "Watch your custom product render instantly in high-quality 3D. Rotate, zoom, and inspect from every angle.",
+        "feature1": "Full 360° rotation and zoom controls",
+        "feature2": "Renders in under 2 seconds",
+        "feature3": "Exact preview of final product"
+      },
+      "step3": {
+        "title": "Order & Receive",
+        "description": "Place your order and we handle the rest. Your custom part will be 3D printed and shipped directly to you.",
+        "feature1": "Professional 3D printing with quality checks",
+        "feature2": "Fast shipping (3-5 business days)",
+        "feature3": "100% satisfaction guarantee"
+      }
+    },
+    "productShowcase": {
+      "badge": "Our Products",
+      "heading": "Available Products",
+      "subheading": "Each product is fully customizable to your exact requirements",
+      "customize": "Customize now",
+      "viewAllProducts": "View All Products",
+      "customizeBadge": "Fully Customizable",
+      "customizable": "Customizable",
+      "instant3d": "Instant 3D Preview",
+      "readyToPrint": "Ready to Print"
+    },
+    "stats": {
+      "precision": "Precision",
+      "renderTime": "Render Time",
+      "formats": "Export Formats",
+      "satisfaction": "Satisfaction"
+    },
+    "cta": {
+      "badge": "Start Creating Today",
+      "heading": "Ready to Get Started?",
+      "subheading": "Join customers who are already creating custom products tailored to their exact needs.",
+      "button": "Browse Products",
+      "trustIndicator1": "No Setup Required",
+      "trustIndicator1Sub": "Works in your browser",
+      "trustIndicator2": "Instant Preview",
+      "trustIndicator2Sub": "See results immediately",
+      "trustIndicator3": "Export Ready",
+      "trustIndicator3Sub": "STL & STEP formats"
+    }
+  },
   "Products": {
     "hoseAdapter": {
       "name": "Vacuum Hose Adapter",

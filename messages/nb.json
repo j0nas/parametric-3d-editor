@@ -11,6 +11,98 @@
     "subtitle": "Tilpass og eksporter parametriske 3D-modeller",
     "products": "Produkter"
   },
+  "LandingPage": {
+    "hero": {
+      "badge": "🚀 Nå tilgjengelig",
+      "title": "Tilpassede 3D-printede produkter, laget etter dine eksakte spesifikasjoner",
+      "subtitle": "Konfigurer parametriske design i sanntid. Se umiddelbar 3D-forhåndsvisning. Bestill og motta den ferdige printede delen.",
+      "ctaPrimary": "Se produkter",
+      "ctaSecondary": "Se hvordan det fungerer",
+      "trustSignal1": "Øyeblikkelig 3D-forhåndsvisning",
+      "trustSignal2": "0,1mm presisjon",
+      "previewLabel": "Live 3D-forhåndsvisning",
+      "previewSubLabel": "Sanntidsrendering",
+      "parameterExample1": "Indre diameter",
+      "parameterExample2": "Ytre diameter",
+      "updating": "Oppdaterer modell...",
+      "liveBadge": "LIVE"
+    },
+    "features": {
+      "heading": "Hvorfor velge vår plattform",
+      "subheading": "Alt du trenger for å få den perfekte tilpassede delen",
+      "parametric": {
+        "title": "Fullt parametrisk",
+        "description": "Juster hver dimensjon til dine eksakte spesifikasjoner. Ingen kompromisser, ingen standardstørrelser—bare den perfekte passformen for dine behov."
+      },
+      "browserBased": {
+        "title": "Ingen programvare nødvendig",
+        "description": "Fungerer helt i nettleseren din. Ingen nedlastinger, ingen plugins, ingen installasjon. Bare åpne og begynn å designe."
+      },
+      "realtime": {
+        "title": "Sanntids 3D-forhåndsvisning",
+        "description": "Se ditt tilpassede produkt umiddelbart gjengitt i 3D. Det du ser er nøyaktig det du får."
+      },
+      "ordering": {
+        "title": "Sømløs bestilling",
+        "description": "Konfigurer produktet ditt, legg inn bestillingen, og motta den ferdige printede delen levert til døren din."
+      }
+    },
+    "howItWorks": {
+      "heading": "Hvordan det fungerer",
+      "subheading": "Fra konfigurasjon til levering i tre enkle trinn",
+      "stepLabel": "Steg {number}",
+      "step1": {
+        "title": "Konfigurer produktet ditt",
+        "description": "Bruk intuitive glidebryere for å justere hver parameter. Se valideringstilbakemelding i sanntid for å sikre at designet ditt kan printes.",
+        "feature1": "Juster alle dimensjoner med presisjonsglidere",
+        "feature2": "Sanntidsvalidering forhindrer printfeil",
+        "feature3": "Se eksakte mål mens du tilpasser"
+      },
+      "step2": {
+        "title": "Forhåndsvis i 3D",
+        "description": "Se ditt tilpassede produkt rendres umiddelbart i høykvalitets 3D. Roter, zoom, og inspiser fra alle vinkler.",
+        "feature1": "Full 360° rotasjon og zoomkontroller",
+        "feature2": "Rendrer på under 2 sekunder",
+        "feature3": "Eksakt forhåndsvisning av sluttprodukt"
+      },
+      "step3": {
+        "title": "Bestill og motta",
+        "description": "Legg inn bestillingen din og vi håndterer resten. Din tilpassede del vil bli 3D-printet og sendt direkte til deg.",
+        "feature1": "Profesjonell 3D-printing med kvalitetskontroller",
+        "feature2": "Rask levering (3-5 virkedager)",
+        "feature3": "100% tilfredshetgaranti"
+      }
+    },
+    "productShowcase": {
+      "badge": "Våre produkter",
+      "heading": "Tilgjengelige produkter",
+      "subheading": "Hvert produkt er fullt tilpassbart til dine eksakte krav",
+      "customize": "Tilpass nå",
+      "viewAllProducts": "Se alle produkter",
+      "customizeBadge": "Fullt tilpassbar",
+      "customizable": "Tilpassbar",
+      "instant3d": "Øyeblikkelig 3D-forhåndsvisning",
+      "readyToPrint": "Klar til å printe"
+    },
+    "stats": {
+      "precision": "Presisjon",
+      "renderTime": "Renderingstid",
+      "formats": "Eksportformater",
+      "satisfaction": "Tilfredshet"
+    },
+    "cta": {
+      "badge": "Begynn å lage i dag",
+      "heading": "Klar til å komme i gang?",
+      "subheading": "Bli med kunder som allerede lager tilpassede produkter skreddersydd til deres eksakte behov.",
+      "button": "Se produkter",
+      "trustIndicator1": "Ingen oppsett nødvendig",
+      "trustIndicator1Sub": "Fungerer i nettleseren din",
+      "trustIndicator2": "Øyeblikkelig forhåndsvisning",
+      "trustIndicator2Sub": "Se resultater umiddelbart",
+      "trustIndicator3": "Eksportklar",
+      "trustIndicator3Sub": "STL & STEP formater"
+    }
+  },
   "Products": {
     "hoseAdapter": {
       "name": "Støvsugerslange-adapter",
